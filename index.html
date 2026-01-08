@@ -181,9 +181,22 @@ loginBtn.onclick = async ()=>{
 }
 
 // ================= LOGOUT =================
-logoutBtn.onclick = async ()=>{
+logoutBtn.onclick = async () => {
   await supabase.auth.signOut()
-  location.reload()
+
+  // 🔥 PAKSA CLEAR STORAGE (iOS FIX)
+  localStorage.clear()
+  sessionStorage.clear()
+
+  // 🔥 RESET UI MANUAL
+  loginBtn.style.display = 'inline-block'
+  avatar.style.display = 'none'
+  dropdown.style.display = 'none'
+  welcome.innerText = 'Buat Caption Otomatis'
+  currentUser = null
+
+  // 🔥 HARD REDIRECT (BUKAN RELOAD)
+  window.location.href = location.origin + location.pathname
 }
 
 // ================= AUTH LISTENER =================

@@ -218,32 +218,27 @@ logoutBtn.onclick = async () => {
   location.reload()
 }
 
-/* ===== HANDLE AUTH STATE ===== */
-supabase.auth.onAuthStateChange(async (event, session) => {
-  console.log('AUTH EVENT:', event)
+// === AUTH STATE LISTENER ===
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('AUTH EVENT:', event, session)
 
   if (session?.user) {
     const user = session.user
 
-    // Update UI
     loginBtn.style.display = 'none'
     avatar.style.display = 'block'
     avatar.src = user.user_metadata.avatar_url
     welcome.innerText =
-      '👋 Halo, ' + (user.user_metadata.full_name || 'User')
+      '👋 Halo, ' + user.user_metadata.full_name
 
-    // 🔥 PENTING: bersihkan URL hash SETELAH login sukses
-    if (window.location.hash) {
-      history.replaceState(
-        null,
-        '',
-        window.location.pathname
-      )
+    // 🔥 bersihkan hash SETELAH session valid
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname)
     }
   }
 })
 
-/* ===== FORCE LOAD SESSION (WAJIB) ===== */
+// 🔥 PAKSA SUPABASE PROSES TOKEN
 await supabase.auth.getSession()
 
 /* ===== AVATAR DROPDOWN ===== */

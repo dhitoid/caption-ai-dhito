@@ -181,8 +181,6 @@ loginBtn.onclick = async ()=>{
 /* ===== LOGOUT (iOS SAFE) ===== */
 logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
-  localStorage.clear()
-  sessionStorage.clear()
   window.location.href = location.origin + location.pathname
 }
 

@@ -200,9 +200,9 @@
 
 <script>
 function generate() {
-  const platform = platform.value
+  const platform = document.getElementById('platform').value
+  const style = document.getElementById('style').value
   const product = document.getElementById('product').value
-  const style = style.value
 
   if (!product) {
     alert('Produk / jasa wajib diisi')
@@ -224,13 +224,12 @@ function copyCaption() {
 }
 </script>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script>
 checkUser().then(user => {
   if (user) {
-    document.getElementById('welcome').innerText =
-      '👋 Halo, ' + user.user_metadata.full_name
-
+    welcome.innerText = '👋 Halo, ' + (user.user_metadata.full_name || 'User')
     loginBtn.style.display = 'none'
     logoutBtn.style.display = 'inline-block'
   }

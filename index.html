@@ -76,6 +76,7 @@ input,select{
   background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   color:#fff;border:none;padding:14px;
   border-radius:14px;font-weight:600;
+  cursor:pointer;
 }
 .result{
   background:#f8fafc;
@@ -88,6 +89,7 @@ input,select{
   margin-top:12px;background:#e0f2fe;
   border:none;padding:10px;width:100%;
   border-radius:10px;font-weight:600;
+  cursor:pointer;
 }
 footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 </style>
@@ -144,24 +146,33 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// ================= SUPABASE =================
 const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY',
   {
     auth:{
-      flowType:'pkce',            // ✅ WAJIB
+      flowType:'pkce',
       detectSessionInUrl:true,
       persistSession:true
     }
   }
 )
 
-const loginBtn = document.getElementById('loginBtn')
-const avatar   = document.getElementById('avatar')
-const dropdown = document.getElementById('dropdown')
-const logoutBtn= document.getElementById('logoutBtn')
-const welcome  = document.getElementById('welcome')
+// ================= STATE =================
+let currentUser = null
 
+// ================= ELEMENT =================
+const loginBtn  = document.getElementById('loginBtn')
+const avatar    = document.getElementById('avatar')
+const dropdown  = document.getElementById('dropdown')
+const logoutBtn = document.getElementById('logoutBtn')
+const welcome   = document.getElementById('welcome')
+const generate  = document.getElementById('generate')
+const copyBtn   = document.getElementById('copy')
+const result    = document.getElementById('result')
+
+// ================= LOGIN =================
 loginBtn.onclick = async ()=>{
   await supabase.auth.signInWithOAuth({
     provider:'google',
@@ -169,43 +180,63 @@ loginBtn.onclick = async ()=>{
   })
 }
 
+// ================= LOGOUT =================
 logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
   location.reload()
 }
 
+// ================= AUTH LISTENER =================
 supabase.auth.onAuthStateChange((event, session)=>{
-  if(session?.user){
-    const u = session.user
+  currentUser = session?.user || null
+
+  if(currentUser){
+    const u = currentUser
     loginBtn.style.display='none'
     avatar.style.display='block'
-    avatar.src = u.user_metadata.picture   // ✅ FIX
+    avatar.src = u.user_metadata.picture
     welcome.innerText = '👋 Halo, ' + u.user_metadata.full_name
 
-    // ✅ BERSIHKAN TOKEN URL
     if(location.hash){
       history.replaceState({},'',location.pathname)
     }
   }
 })
 
-// 🔥 WAJIB agar session kebaca di Safari
+// 🔥 WAJIB (Safari / iOS)
 await supabase.auth.getSession()
 
+// ================= AVATAR =================
 avatar.onclick = ()=>{
   dropdown.style.display =
     dropdown.style.display==='block'?'none':'block'
 }
 
+// ================= GENERATE (STEP 3) =================
 generate.onclick = ()=>{
-  if(!product.value) return alert('Produk wajib diisi')
+  if(!currentUser){
+    alert('Silakan login dulu untuk menggunakan Caption AI')
+    return
+  }
+
+  if(!product.value){
+    alert('Produk wajib diisi')
+    return
+  }
+
   result.innerText =
 `${product.value}
 
 Solusi praktis siap dipakai di ${platform.value}`
 }
 
-copy.onclick = ()=>{
+// ================= COPY (STEP 3) =================
+copyBtn.onclick = ()=>{
+  if(!currentUser){
+    alert('Login dulu untuk menyalin caption')
+    return
+  }
+
   navigator.clipboard.writeText(result.innerText)
   alert('Caption disalin')
 }

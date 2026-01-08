@@ -16,9 +16,7 @@
       }
     })
 
-    if (error) {
-      alert('Login gagal: ' + error.message)
-    }
+    if (error) alert(error.message)
   }
 
   async function logout() {
@@ -27,11 +25,7 @@
   }
 
   async function checkUser() {
-    const {
-      data: { session }
-    } = await supabase.auth.getSession()
-
+    const { data: { session } } = await supabase.auth.getSession()
     return session?.user || null
   }
 </script>
-

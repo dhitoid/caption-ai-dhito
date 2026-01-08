@@ -29,7 +29,6 @@
       min-height: 100vh;
     }
 
-    /* ===== HEADER ===== */
     header {
       background: #ffffffcc;
       backdrop-filter: blur(10px);
@@ -52,6 +51,7 @@
       border: 1px solid var(--border);
       background: #fff;
       font-size: 14px;
+      cursor: pointer;
     }
 
     .auth button.primary {
@@ -60,17 +60,13 @@
       border: none;
     }
 
-    /* ===== MAIN ===== */
     main {
       max-width: 540px;
       margin: 0 auto;
       padding: 24px 20px;
     }
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 6px;
-    }
+    h1 { font-size: 26px; margin-bottom: 6px; }
 
     .subtitle {
       color: var(--muted);
@@ -103,8 +99,6 @@
       margin-bottom: 14px;
     }
 
-    input::placeholder { color: #94a3b8; }
-
     button.primary {
       width: 100%;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -114,11 +108,10 @@
       border-radius: 14px;
       font-size: 16px;
       font-weight: 600;
+      cursor: pointer;
     }
 
-    /* ===== RESULT ===== */
     .result-box {
-      position: relative;
       background: #f8fafc;
       border-radius: 14px;
       padding: 16px;
@@ -137,6 +130,7 @@
       border-radius: 10px;
       font-weight: 600;
       color: var(--primary-dark);
+      cursor: pointer;
     }
 
     footer {
@@ -152,16 +146,14 @@
 <header>
   <div class="brand">Caption AI</div>
   <div class="auth">
-    <button id="loginBtn" class="primary" onclick="loginGoogle()">Login Google</button>
-    <button id="logoutBtn" onclick="logout()" style="display:none">Logout</button>
+    <button id="loginBtn" class="primary">Login Google</button>
+    <button id="logoutBtn" style="display:none">Logout</button>
   </div>
 </header>
 
 <main>
   <h1 id="welcome">Buat Caption Otomatis</h1>
-  <div class="subtitle">
-    Caption profesional untuk Instagram, WhatsApp, dan TikTok
-  </div>
+  <div class="subtitle">Caption profesional untuk Instagram, WhatsApp, dan TikTok</div>
 
   <div class="card">
     <label>Platform</label>
@@ -182,58 +174,63 @@
       <option>Profesional</option>
     </select>
 
-    <button class="primary" onclick="generate()">🚀 Buat Caption</button>
+    <button id="generateBtn" class="primary">🚀 Buat Caption</button>
   </div>
 
   <div class="card">
     <label>Hasil Caption</label>
-    <div id="result" class="result-box">
-      —
-    </div>
-    <button class="copy-btn" onclick="copyCaption()">📋 Salin Caption</button>
+    <div id="result" class="result-box">—</div>
+    <button id="copyBtn" class="copy-btn">📋 Salin Caption</button>
   </div>
 </main>
 
-<footer>
-  © 2026 Caption AI · Powered By DHITO
-</footer>
+<footer>© 2026 Caption AI · Powered By DHITO</footer>
 
+<!-- JS -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
 <script>
-function generate() {
-  const platform = document.getElementById('platform').value
-  const style = document.getElementById('style').value
-  const product = document.getElementById('product').value
+document.addEventListener('DOMContentLoaded', async () => {
+  const loginBtn = document.getElementById('loginBtn')
+  const logoutBtn = document.getElementById('logoutBtn')
+  const generateBtn = document.getElementById('generateBtn')
+  const copyBtn = document.getElementById('copyBtn')
 
-  if (!product) {
-    alert('Produk / jasa wajib diisi')
-    return
-  }
+  loginBtn.addEventListener('click', loginGoogle)
+  logoutBtn.addEventListener('click', logout)
 
-  const caption =
+  generateBtn.addEventListener('click', () => {
+    const platform = platformEl.value
+    const style = styleEl.value
+    const product = productEl.value
+
+    if (!product) return alert('Produk / jasa wajib diisi')
+
+    result.innerText =
 `${product}
 
 Solusi praktis yang cocok untuk kamu.
 Gaya ${style}, siap dipakai di ${platform}.`
+  })
 
-  result.innerText = caption
-}
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(result.innerText)
+    alert('Caption berhasil disalin!')
+  })
 
-function copyCaption() {
-  navigator.clipboard.writeText(result.innerText)
-  alert('Caption berhasil disalin!')
-}
-</script>
-
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="auth.js"></script>
-<script>
-checkUser().then(user => {
+  const user = await checkUser()
   if (user) {
     welcome.innerText = '👋 Halo, ' + (user.user_metadata.full_name || 'User')
     loginBtn.style.display = 'none'
     logoutBtn.style.display = 'inline-block'
   }
 })
+
+const platformEl = document.getElementById('platform')
+const styleEl = document.getElementById('style')
+const productEl = document.getElementById('product')
+const result = document.getElementById('result')
+const welcome = document.getElementById('welcome')
 </script>
 
 </body>

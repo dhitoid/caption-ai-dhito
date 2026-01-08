@@ -186,51 +186,84 @@
 
 <footer>© 2026 Caption AI · Powered By DHITO</footer>
 
-<!-- JS -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="auth.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const loginBtn = document.getElementById('loginBtn')
-  const logoutBtn = document.getElementById('logoutBtn')
-  const generateBtn = document.getElementById('generateBtn')
-  const copyBtn = document.getElementById('copyBtn')
+<script type="module">
+  // ===== BUKTI JS HIDUP =====
+  console.log('JS LOADED');
+  alert('JS LOADED');
 
-  loginBtn.addEventListener('click', loginGoogle)
-  logoutBtn.addEventListener('click', logout)
+  // ===== IMPORT SUPABASE (ES MODULE) =====
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+  const SUPABASE_URL = 'https://lgkbrgwgdgqfhidjivcr.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ===== ELEMENT =====
+  const loginBtn   = document.getElementById('loginBtn');
+  const logoutBtn  = document.getElementById('logoutBtn');
+  const generateBtn = document.getElementById('generateBtn');
+  const copyBtn    = document.getElementById('copyBtn');
+
+  const platformEl = document.getElementById('platform');
+  const styleEl    = document.getElementById('style');
+  const productEl  = document.getElementById('product');
+  const resultEl   = document.getElementById('result');
+  const welcomeEl  = document.getElementById('welcome');
+
+  // ===== LOGIN GOOGLE =====
+  loginBtn.addEventListener('click', async () => {
+    alert('LOGIN CLICKED');
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) alert(error.message);
+  });
+
+  // ===== LOGOUT =====
+  logoutBtn.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    location.reload();
+  });
+
+  // ===== GENERATE CAPTION =====
   generateBtn.addEventListener('click', () => {
-    const platform = platformEl.value
-    const style = styleEl.value
-    const product = productEl.value
+    const platform = platformEl.value;
+    const style = styleEl.value;
+    const product = productEl.value;
 
-    if (!product) return alert('Produk / jasa wajib diisi')
+    if (!product) {
+      alert('Produk / jasa wajib diisi');
+      return;
+    }
 
-    result.innerText =
+    resultEl.innerText =
 `${product}
 
 Solusi praktis yang cocok untuk kamu.
-Gaya ${style}, siap dipakai di ${platform}.`
-  })
+Gaya ${style}, siap dipakai di ${platform}.`;
+  });
 
+  // ===== COPY =====
   copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(result.innerText)
-    alert('Caption berhasil disalin!')
-  })
+    navigator.clipboard.writeText(resultEl.innerText);
+    alert('Caption berhasil disalin!');
+  });
 
-  const user = await checkUser()
-  if (user) {
-    welcome.innerText = '👋 Halo, ' + (user.user_metadata.full_name || 'User')
-    loginBtn.style.display = 'none'
-    logoutBtn.style.display = 'inline-block'
+  // ===== CHECK LOGIN =====
+  const { data } = await supabase.auth.getSession();
+
+  if (data.session?.user) {
+    welcomeEl.innerText =
+      '👋 Halo, ' + (data.session.user.user_metadata.full_name || 'User');
+    loginBtn.style.display = 'none';
+    logoutBtn.style.display = 'inline-block';
   }
-})
-
-const platformEl = document.getElementById('platform')
-const styleEl = document.getElementById('style')
-const productEl = document.getElementById('product')
-const result = document.getElementById('result')
-const welcome = document.getElementById('welcome')
 </script>
 
 </body>

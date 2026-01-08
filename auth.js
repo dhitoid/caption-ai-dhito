@@ -9,9 +9,16 @@
   )
 
   async function loginGoogle() {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google'
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
     })
+
+    if (error) {
+      alert('Login gagal: ' + error.message)
+    }
   }
 
   async function logout() {
@@ -20,7 +27,11 @@
   }
 
   async function checkUser() {
-    const { data } = await supabase.auth.getUser()
-    return data.user
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+
+    return session?.user || null
   }
 </script>
+

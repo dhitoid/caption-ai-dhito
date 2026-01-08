@@ -25,16 +25,23 @@ body{
   color:var(--text);
 }
 header{
-  display:flex;justify-content:space-between;align-items:center;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   padding:14px 20px;
-  background:#ffffffcc;backdrop-filter:blur(10px);
+  background:#ffffffcc;
+  backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);
 }
 .brand{font-weight:700;color:var(--primary-dark)}
 .auth{position:relative}
 .login-btn{
-  background:var(--primary);color:#fff;border:none;
-  padding:8px 14px;border-radius:8px;cursor:pointer;
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
 }
 .avatar{
   width:36px;height:36px;border-radius:50%;
@@ -43,54 +50,65 @@ header{
 .dropdown{
   position:absolute;right:0;top:46px;
   background:#fff;border:1px solid var(--border);
-  border-radius:10px;display:none;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  display:none;
 }
 .dropdown button{
-  background:none;border:none;padding:10px 16px;
-  width:100%;text-align:left;cursor:pointer;
+  background:none;border:none;
+  padding:10px 16px;width:100%;
+  text-align:left;cursor:pointer;
 }
 main{max-width:540px;margin:auto;padding:24px 20px}
 .card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:18px;padding:20px;margin-bottom:20px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;margin-bottom:20px;
 }
 label{font-size:13px;color:var(--muted)}
-input{
+input,select{
   width:100%;padding:12px;margin-bottom:14px;
   border-radius:12px;border:1px solid var(--border);
 }
-
-/* ===== CUSTOM SELECT ===== */
-.select{
-  border:1px solid var(--border);
-  border-radius:12px;padding:12px;
-  margin-bottom:14px;cursor:pointer;
-}
-.select-options{
-  display:none;margin-top:8px;
-  border:1px solid var(--border);
-  border-radius:10px;overflow:hidden;
-}
-.select-options div{
-  padding:10px;background:#fff;
-}
-.select-options div:hover{background:#f1f5f9}
-
 .primary{
   width:100%;
   background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   color:#fff;border:none;padding:14px;
   border-radius:14px;font-weight:600;
+  cursor:pointer;
 }
 .result{
-  background:#f8fafc;border:1px dashed var(--border);
-  border-radius:14px;padding:16px;min-height:90px;
+  background:#f8fafc;
+  border:1px dashed var(--border);
+  border-radius:14px;
+  padding:16px;min-height:90px;
   white-space:pre-line;
 }
 .copy{
   margin-top:12px;background:#e0f2fe;
   border:none;padding:10px;width:100%;
   border-radius:10px;font-weight:600;
+  cursor:pointer;
+}
+.option-group{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.option{
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  font-size:13px;
+  background:#fff;
+}
+.option.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
 }
 footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 </style>
@@ -110,30 +128,34 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 </header>
 
 <main>
-  <p id="limitInfo"></p>
+  <p id="limitInfo" style="font-size:13px;color:#0ea5e9;font-weight:600"></p>
   <h1 id="welcome">Buat Caption Otomatis</h1>
+  <p style="color:var(--muted)">Caption profesional IG, WA, TikTok</p>
 
   <div class="card">
-    <label>Platform</label>
-    <div id="platformSelect" class="select">Instagram</div>
-    <div id="platformOpt" class="select-options">
-      <div>Instagram</div><div>WhatsApp</div><div>TikTok</div>
-    </div>
+<label>Platform</label>
+<div id="platform" class="option-group">
+  <div class="option active">Instagram</div>
+  <div class="option">WhatsApp</div>
+  <div class="option">TikTok</div>
+</div>
 
-    <label>Produk / Jasa</label>
-    <input id="product" placeholder="Contoh: Rumah subsidi">
+<label>Produk / Jasa</label>
+<input id="product" placeholder="Contoh: Rumah subsidi">
 
-    <label>Gaya Bahasa</label>
-    <div id="styleSelect" class="select">Soft selling</div>
-    <div id="styleOpt" class="select-options">
-      <div>Soft selling</div><div>Hard selling</div>
-      <div>Santai</div><div>Profesional</div>
-    </div>
+<label>Gaya Bahasa</label>
+<div id="style" class="option-group">
+  <div class="option active">Soft selling</div>
+  <div class="option">Hard selling</div>
+  <div class="option">Santai</div>
+  <div class="option">Profesional</div>
+</div>
 
     <button id="generate" class="primary">🚀 Buat Caption</button>
   </div>
 
   <div class="card">
+    <label>Hasil Caption</label>
     <div id="result" class="result">—</div>
     <button id="copy" class="copy">📋 Salin Caption</button>
   </div>
@@ -147,87 +169,146 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY',
-  { auth:{ flowType:'pkce', detectSessionInUrl:true, persistSession:true } }
+  {
+    auth:{
+      flowType:'pkce',
+      detectSessionInUrl:true,
+      persistSession:true
+    }
+  }
 )
 
 /* ===== ELEMENT ===== */
-const loginBtn = document.getElementById('loginBtn')
-const avatar = document.getElementById('avatar')
-const dropdown = document.getElementById('dropdown')
+const loginBtn  = document.getElementById('loginBtn')
+const avatar    = document.getElementById('avatar')
+const dropdown  = document.getElementById('dropdown')
 const logoutBtn = document.getElementById('logoutBtn')
-const welcome = document.getElementById('welcome')
+const welcome   = document.getElementById('welcome')
 const limitInfo = document.getElementById('limitInfo')
+const result    = document.getElementById('result')
+const product   = document.getElementById('product')
 
-let currentUser = null
 const DAILY_LIMIT = 5
+let currentUser = null
 
-/* ===== AUTH ===== */
-loginBtn.onclick = () =>
-  supabase.auth.signInWithOAuth({
+/* ===== CUSTOM OPTION ===== */
+function setupOptions(id){
+  const group = document.getElementById(id)
+  group.querySelectorAll('.option').forEach(opt=>{
+    opt.onclick = ()=>{
+      group.querySelectorAll('.option').forEach(o=>o.classList.remove('active'))
+      opt.classList.add('active')
+    }
+  })
+}
+setupOptions('platform')
+setupOptions('style')
+
+const getActive = id =>
+  document.querySelector(`#${id} .option.active`).innerText
+
+/* ===== LOGIN ===== */
+loginBtn.onclick = async ()=>{
+  await supabase.auth.signInWithOAuth({
     provider:'google',
     options:{ redirectTo: location.origin + location.pathname }
   })
+}
 
-logoutBtn.onclick = async () => {
+/* ===== LOGOUT (STABIL iOS & ANDROID) ===== */
+logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
   currentUser = null
-  loginBtn.style.display='block'
+
   avatar.style.display='none'
   dropdown.style.display='none'
+  loginBtn.style.display='inline-block'
+  welcome.innerText = 'Buat Caption Otomatis'
+  limitInfo.innerText = ''
+
+  history.replaceState({},'',location.pathname)
 }
 
-/* ===== SESSION ===== */
-const { data } = await supabase.auth.getSession()
-if(data.session) handleLogin(data.session.user)
+/* ===== AUTH LISTENER ===== */
+supabase.auth.onAuthStateChange((event, session)=>{
+  if(session?.user){
+    currentUser = session.user
 
-supabase.auth.onAuthStateChange((_, session)=>{
-  if(session?.user) handleLogin(session.user)
+    loginBtn.style.display='none'
+    avatar.style.display='block'
+    avatar.src = currentUser.user_metadata.picture
+    welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
+
+    updateLimitUI()
+
+    if(location.hash){
+      history.replaceState({},'',location.pathname)
+    }
+  }
 })
 
-function handleLogin(user){
-  currentUser = user
-  loginBtn.style.display='none'
-  avatar.style.display='block'
-  avatar.src = user.user_metadata.picture
-  welcome.innerText = '👋 Halo, ' + user.user_metadata.full_name
-  updateLimitUI()
-}
+await supabase.auth.getSession()
 
 /* ===== LIMIT ===== */
-function today(){return new Date().toISOString().slice(0,10)}
-function getUsage(){
-  const d=`d_${currentUser.id}`,c=`c_${currentUser.id}`
-  if(localStorage.getItem(d)!==today()){
-    localStorage.setItem(d,today());localStorage.setItem(c,0)
-  }
-  return +localStorage.getItem(c)
-}
-function inc(){localStorage.setItem(`c_${currentUser.id}`,getUsage()+1)}
-function updateLimitUI(){
-  limitInfo.innerText =
-    `Gratis: ${DAILY_LIMIT-getUsage()} dari ${DAILY_LIMIT} hari ini`
+function today(){
+  return new Date().toISOString().slice(0,10)
 }
 
-/* ===== CUSTOM SELECT ===== */
-function setupSelect(btn,opt){
-  btn.onclick=()=>opt.style.display=opt.style.display?'':'block'
-  opt.querySelectorAll('div').forEach(v=>{
-    v.onclick=()=>{btn.innerText=v.innerText;opt.style.display='none'}
-  })
+function getUsage(){
+  if(!currentUser) return 0
+  const d = `d_${currentUser.id}`
+  const c = `c_${currentUser.id}`
+
+  if(localStorage.getItem(d) !== today()){
+    localStorage.setItem(d,today())
+    localStorage.setItem(c,'0')
+  }
+  return Number(localStorage.getItem(c))
 }
-setupSelect(platformSelect,platformOpt)
-setupSelect(styleSelect,styleOpt)
+
+function incrementUsage(){
+  const c = `c_${currentUser.id}`
+  localStorage.setItem(c, getUsage()+1)
+}
+
+function updateLimitUI(){
+  const used = getUsage()
+  limitInfo.innerText =
+    `Gratis: ${DAILY_LIMIT-used} dari ${DAILY_LIMIT} caption tersisa hari ini`
+}
+
+/* ===== AVATAR ===== */
+avatar.onclick = ()=>{
+  dropdown.style.display =
+    dropdown.style.display==='block'?'none':'block'
+}
 
 /* ===== GENERATE ===== */
 generate.onclick = ()=>{
-  if(!currentUser) return alert('Login dulu')
-  if(getUsage()>=DAILY_LIMIT) return alert('Limit habis')
+  if(!currentUser) return alert('Silakan login dulu')
+
+  if(getUsage() >= DAILY_LIMIT){
+    alert('Limit harian habis 😢')
+    return
+  }
+
+  if(!product.value) return alert('Produk wajib diisi')
+
   result.innerText =
 `${product.value}
-Solusi ${styleSelect.innerText} untuk ${platformSelect.innerText}`
-  inc();updateLimitUI()
+
+Solusi praktis siap dipakai di ${getActive('platform')}
+Gaya: ${getActive('style')}`
+
+  incrementUsage()
+  updateLimitUI()
 }
-copy.onclick=()=>navigator.clipboard.writeText(result.innerText)
+
+/* ===== COPY ===== */
+copy.onclick = ()=>{
+  navigator.clipboard.writeText(result.innerText)
+  alert('Caption disalin')
+}
 </script>
 
 </body>

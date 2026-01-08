@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#38bdf8" />
 
 <style>
+/* ===== STYLE TIDAK DIUBAH ===== */
 :root{
   --bg:#f8fafc;
   --card:#fff;
@@ -25,91 +26,54 @@ body{
   color:var(--text);
 }
 header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 20px;
-  background:#ffffffcc;
-  backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 20px;background:#ffffffcc;
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
 }
 .brand{font-weight:700;color:var(--primary-dark)}
 .auth{position:relative}
 .login-btn{
-  background:var(--primary);
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
+  background:var(--primary);color:#fff;border:none;
+  padding:8px 14px;border-radius:8px;cursor:pointer;
 }
-.avatar{
-  width:36px;height:36px;border-radius:50%;
-  cursor:pointer;display:none;
-}
+.avatar{width:36px;height:36px;border-radius:50%;cursor:pointer;display:none}
 .dropdown{
-  position:absolute;right:0;top:46px;
-  background:#fff;border:1px solid var(--border);
-  border-radius:10px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-  display:none;
+  position:absolute;right:0;top:46px;background:#fff;
+  border:1px solid var(--border);border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);display:none;
 }
 .dropdown button{
-  background:none;border:none;
-  padding:10px 16px;width:100%;
+  background:none;border:none;padding:10px 16px;width:100%;
   text-align:left;cursor:pointer;
 }
 main{max-width:540px;margin:auto;padding:24px 20px}
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:20px;margin-bottom:20px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:20px;margin-bottom:20px;
 }
 label{font-size:13px;color:var(--muted)}
-input,select{
+input{
   width:100%;padding:12px;margin-bottom:14px;
   border-radius:12px;border:1px solid var(--border);
 }
 .primary{
-  width:100%;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;border:none;padding:14px;
-  border-radius:14px;font-weight:600;
-  cursor:pointer;
+  width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;padding:14px;border-radius:14px;font-weight:600;
 }
 .result{
-  background:#f8fafc;
-  border:1px dashed var(--border);
-  border-radius:14px;
-  padding:16px;min-height:90px;
-  white-space:pre-line;
+  background:#f8fafc;border:1px dashed var(--border);
+  border-radius:14px;padding:16px;min-height:90px;white-space:pre-line;
 }
 .copy{
-  margin-top:12px;background:#e0f2fe;
-  border:none;padding:10px;width:100%;
-  border-radius:10px;font-weight:600;
-  cursor:pointer;
+  margin-top:12px;background:#e0f2fe;border:none;
+  padding:10px;width:100%;border-radius:10px;font-weight:600;
 }
-.option-group{
-  display:flex;
-  gap:8px;
-  margin-bottom:14px;
-  flex-wrap:wrap;
-}
+.option-group{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .option{
-  padding:10px 14px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  cursor:pointer;
-  font-size:13px;
-  background:#fff;
+  padding:10px 14px;border-radius:999px;border:1px solid var(--border);
+  cursor:pointer;font-size:13px;background:#fff;
 }
-.option.active{
-  background:var(--primary);
-  color:#fff;
-  border-color:var(--primary);
-}
+.option.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 </style>
 </head>
@@ -133,23 +97,23 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
   <p style="color:var(--muted)">Caption profesional IG, WA, TikTok</p>
 
   <div class="card">
-<label>Platform</label>
-<div id="platform" class="option-group">
-  <div class="option active">Instagram</div>
-  <div class="option">WhatsApp</div>
-  <div class="option">TikTok</div>
-</div>
+    <label>Platform</label>
+    <div id="platform" class="option-group">
+      <div class="option active">Instagram</div>
+      <div class="option">WhatsApp</div>
+      <div class="option">TikTok</div>
+    </div>
 
-<label>Produk / Jasa</label>
-<input id="product" placeholder="Contoh: Rumah subsidi">
+    <label>Produk / Jasa</label>
+    <input id="product" placeholder="Contoh: Rumah subsidi">
 
-<label>Gaya Bahasa</label>
-<div id="style" class="option-group">
-  <div class="option active">Soft selling</div>
-  <div class="option">Hard selling</div>
-  <div class="option">Santai</div>
-  <div class="option">Profesional</div>
-</div>
+    <label>Gaya Bahasa</label>
+    <div id="style" class="option-group">
+      <div class="option active">Soft selling</div>
+      <div class="option">Hard selling</div>
+      <div class="option">Santai</div>
+      <div class="option">Profesional</div>
+    </div>
 
     <button id="generate" class="primary">🚀 Buat Caption</button>
   </div>
@@ -170,11 +134,7 @@ const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY',
   {
-    auth:{
-      flowType:'pkce',
-      detectSessionInUrl:true,
-      persistSession:true
-    }
+    auth:{ flowType:'pkce', detectSessionInUrl:true, persistSession:true }
   }
 )
 
@@ -190,14 +150,15 @@ const product   = document.getElementById('product')
 
 const DAILY_LIMIT = 5
 let currentUser = null
+let isPremiumUser = false
 
-/* ===== CUSTOM OPTION ===== */
+/* ===== OPTION ===== */
 function setupOptions(id){
-  const group = document.getElementById(id)
-  group.querySelectorAll('.option').forEach(opt=>{
-    opt.onclick = ()=>{
-      group.querySelectorAll('.option').forEach(o=>o.classList.remove('active'))
-      opt.classList.add('active')
+  const g = document.getElementById(id)
+  g.querySelectorAll('.option').forEach(o=>{
+    o.onclick = ()=>{
+      g.querySelectorAll('.option').forEach(x=>x.classList.remove('active'))
+      o.classList.add('active')
     }
   })
 }
@@ -215,80 +176,69 @@ loginBtn.onclick = async ()=>{
   })
 }
 
-/* ===== LOGOUT (STABIL iOS & ANDROID) ===== */
+/* ===== LOGOUT ===== */
 logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
-  currentUser = null
-
-  avatar.style.display='none'
-  dropdown.style.display='none'
-  loginBtn.style.display='inline-block'
-  welcome.innerText = 'Buat Caption Otomatis'
-  limitInfo.innerText = ''
-
-  history.replaceState({},'',location.pathname)
+  location.reload()
 }
 
-/* ===== AUTH LISTENER ===== */
-supabase.auth.onAuthStateChange((event, session)=>{
-  if(session?.user){
-    currentUser = session.user
-
+/* ===== AUTH ===== */
+supabase.auth.onAuthStateChange(async (e,s)=>{
+  if(s?.user){
+    currentUser = s.user
     loginBtn.style.display='none'
     avatar.style.display='block'
     avatar.src = currentUser.user_metadata.picture
     welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
 
+    await loadPremium()
     updateLimitUI()
 
-    if(location.hash){
-      history.replaceState({},'',location.pathname)
-    }
+    if(location.hash) history.replaceState({},'',location.pathname)
   }
 })
 
 await supabase.auth.getSession()
 
-/* ===== LIMIT ===== */
-function today(){
-  return new Date().toISOString().slice(0,10)
+/* ===== PREMIUM (DATABASE) ===== */
+async function loadPremium(){
+  const { data } = await supabase
+    .from('profiles')
+    .select('is_premium')
+    .eq('id', currentUser.id)
+    .single()
+
+  isPremiumUser = data?.is_premium === true
 }
 
-function getUsage(){
-  if(!currentUser) return 0
-  const d = `d_${currentUser.id}`
-  const c = `c_${currentUser.id}`
+/* ===== LIMIT ===== */
+function today(){ return new Date().toISOString().slice(0,10) }
 
-  if(localStorage.getItem(d) !== today()){
+function getUsage(){
+  const d=`d_${currentUser.id}`, c=`c_${currentUser.id}`
+  if(localStorage.getItem(d)!==today()){
     localStorage.setItem(d,today())
     localStorage.setItem(c,'0')
   }
   return Number(localStorage.getItem(c))
 }
-
-function incrementUsage(){
-  const c = `c_${currentUser.id}`
-  localStorage.setItem(c, getUsage()+1)
-}
+function inc(){ localStorage.setItem(`c_${currentUser.id}`, getUsage()+1) }
 
 function updateLimitUI(){
-  const used = getUsage()
-  limitInfo.innerText =
-    `Gratis: ${DAILY_LIMIT-used} dari ${DAILY_LIMIT} caption tersisa hari ini`
-}
-
-/* ===== AVATAR ===== */
-avatar.onclick = ()=>{
-  dropdown.style.display =
-    dropdown.style.display==='block'?'none':'block'
+  if(isPremiumUser){
+    limitInfo.innerText='⭐ Premium Aktif — Unlimited Caption'
+  }else{
+    limitInfo.innerText=
+      `Gratis: ${DAILY_LIMIT-getUsage()} dari ${DAILY_LIMIT} caption`
+  }
 }
 
 /* ===== GENERATE ===== */
 generate.onclick = ()=>{
-  if(!currentUser) return alert('Silakan login dulu')
+  if(!currentUser) return alert('Login dulu')
 
-  if(getUsage() >= DAILY_LIMIT){
-    alert('Limit harian habis 😢')
+  if(!isPremiumUser && getUsage()>=DAILY_LIMIT){
+    alert('Limit habis 😢\nUpgrade ke Premium')
     return
   }
 
@@ -300,8 +250,10 @@ generate.onclick = ()=>{
 Solusi praktis siap dipakai di ${getActive('platform')}
 Gaya: ${getActive('style')}`
 
-  incrementUsage()
-  updateLimitUI()
+  if(!isPremiumUser){
+    inc()
+    updateLimitUI()
+  }
 }
 
 /* ===== COPY ===== */

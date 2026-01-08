@@ -1,25 +1,117 @@
+caption ai dhito
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Caption AI</title>
+
 <meta name="theme-color" content="#38bdf8" />
 
 <style>
-/* ===== STYLE DIPERSINGKAT (AMAN) ===== */
-body{margin:0;font-family:-apple-system;background:#f8fafc}
-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#fff;border-bottom:1px solid #e5e7eb}
-.brand{font-weight:700;color:#0ea5e9}
-.login-btn{background:#38bdf8;color:#fff;border:none;padding:8px 14px;border-radius:8px}
-.avatar{width:36px;height:36px;border-radius:50%;display:none}
-.dropdown{position:absolute;right:0;top:46px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;display:none}
-.dropdown button{padding:10px 16px;width:100%;border:none;background:none}
-main{max-width:520px;margin:auto;padding:20px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:16px}
-.option{border:1px solid #e5e7eb;padding:8px 14px;border-radius:999px;cursor:pointer}
-.option.active{background:#38bdf8;color:#fff}
-.result{background:#f1f5f9;padding:14px;border-radius:12px;min-height:80px}
+:root{
+  --bg:#f8fafc;
+  --card:#fff;
+  --primary:#38bdf8;
+  --primary-dark:#0ea5e9;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e5e7eb;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  background:linear-gradient(180deg,#f0f9ff,var(--bg));
+  color:var(--text);
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  background:#ffffffcc;
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.brand{font-weight:700;color:var(--primary-dark)}
+.auth{position:relative}
+.login-btn{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.avatar{
+  width:36px;height:36px;border-radius:50%;
+  cursor:pointer;display:none;
+}
+.dropdown{
+  position:absolute;right:0;top:46px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  display:none;
+}
+.dropdown button{
+  background:none;border:none;
+  padding:10px 16px;width:100%;
+  text-align:left;cursor:pointer;
+}
+main{max-width:540px;margin:auto;padding:24px 20px}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;margin-bottom:20px;
+}
+label{font-size:13px;color:var(--muted)}
+input,select{
+  width:100%;padding:12px;margin-bottom:14px;
+  border-radius:12px;border:1px solid var(--border);
+}
+.primary{
+  width:100%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;padding:14px;
+  border-radius:14px;font-weight:600;
+  cursor:pointer;
+}
+.result{
+  background:#f8fafc;
+  border:1px dashed var(--border);
+  border-radius:14px;
+  padding:16px;min-height:90px;
+  white-space:pre-line;
+}
+.copy{
+  margin-top:12px;background:#e0f2fe;
+  border:none;padding:10px;width:100%;
+  border-radius:10px;font-weight:600;
+  cursor:pointer;
+}
+.option-group{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.option{
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  font-size:13px;
+  background:#fff;
+}
+.option.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 </style>
 </head>
 
@@ -27,7 +119,7 @@ main{max-width:520px;margin:auto;padding:20px}
 
 <header>
   <div class="brand">Caption AI</div>
-  <div class="auth" style="position:relative">
+  <div class="auth">
     <button id="loginBtn" class="login-btn">Login Google</button>
     <img id="avatar" class="avatar">
     <div id="dropdown" class="dropdown">
@@ -37,31 +129,40 @@ main{max-width:520px;margin:auto;padding:20px}
 </header>
 
 <main>
-  <p id="limitInfo"></p>
-  <h2 id="welcome">Buat Caption Otomatis</h2>
+  <p id="limitInfo" style="font-size:13px;color:#0ea5e9;font-weight:600"></p>
+  <h1 id="welcome">Buat Caption Otomatis</h1>
+  <p style="color:var(--muted)">Caption profesional IG, WA, TikTok</p>
 
   <div class="card">
-    <div id="platform">
-      <span class="option active">Instagram</span>
-      <span class="option">WhatsApp</span>
-      <span class="option">TikTok</span>
-    </div>
+<label>Platform</label>
+<div id="platform" class="option-group">
+  <div class="option active">Instagram</div>
+  <div class="option">WhatsApp</div>
+  <div class="option">TikTok</div>
+</div>
 
-    <input id="product" placeholder="Produk / jasa">
+<label>Produk / Jasa</label>
+<input id="product" placeholder="Contoh: Rumah subsidi">
 
-    <div id="style">
-      <span class="option active">Soft selling</span>
-      <span class="option">Hard selling</span>
-    </div>
+<label>Gaya Bahasa</label>
+<div id="style" class="option-group">
+  <div class="option active">Soft selling</div>
+  <div class="option">Hard selling</div>
+  <div class="option">Santai</div>
+  <div class="option">Profesional</div>
+</div>
 
-    <button id="generate">🚀 Buat Caption</button>
+    <button id="generate" class="primary">🚀 Buat Caption</button>
   </div>
 
   <div class="card">
+    <label>Hasil Caption</label>
     <div id="result" class="result">—</div>
-    <button id="copy">📋 Salin</button>
+    <button id="copy" class="copy">📋 Salin Caption</button>
   </div>
 </main>
+
+<footer>© 2026 Caption AI · By DHITO</footer>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -69,114 +170,180 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY',
-  { auth:{ flowType:'pkce', detectSessionInUrl:true } }
+  {
+    auth:{
+      flowType:'pkce',
+      detectSessionInUrl:true,
+      persistSession:true
+    }
+  }
 )
 
 /* ===== ELEMENT ===== */
-const loginBtn = document.getElementById('loginBtn')
+const loginBtn  = document.getElementById('loginBtn')
+const avatar    = document.getElementById('avatar')
+const dropdown  = document.getElementById('dropdown')
 const logoutBtn = document.getElementById('logoutBtn')
-const avatar = document.getElementById('avatar')
-const dropdown = document.getElementById('dropdown')
-const welcome = document.getElementById('welcome')
+const welcome   = document.getElementById('welcome')
 const limitInfo = document.getElementById('limitInfo')
-const generate = document.getElementById('generate')
-const copy = document.getElementById('copy')
-const result = document.getElementById('result')
-const product = document.getElementById('product')
+const result    = document.getElementById('result')
+const product   = document.getElementById('product')
+const generate  = document.getElementById('generate')
+const copy      = document.getElementById('copy')
 
 const DAILY_LIMIT = 5
 let currentUser = null
-let isPremium = false
+let isPremiumUser = false
+
+/* ===== OPTIONS ===== */
+function setupOptions(id){
+  const group = document.getElementById(id)
+  group.querySelectorAll('.option').forEach(opt=>{
+    opt.onclick = ()=>{
+      group.querySelectorAll('.option').forEach(o=>o.classList.remove('active'))
+      opt.classList.add('active')
+    }
+  })
+}
+setupOptions('platform')
+setupOptions('style')
+
+const getActive = id =>
+  document.querySelector(`#${id} .option.active`).innerText
 
 /* ===== LOGIN ===== */
-loginBtn.onclick = () => {
-  supabase.auth.signInWithOAuth({
+loginBtn.onclick = async ()=>{
+  await supabase.auth.signInWithOAuth({
     provider:'google',
     options:{ redirectTo: location.origin + location.pathname }
   })
 }
 
-/* ===== LOGOUT (IOS FIXED) ===== */
+/* ===== LOGOUT (IOS SAFE) ===== */
 logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
+
+  currentUser = null
+  isPremiumUser = false
+
+  avatar.style.display='none'
+  dropdown.style.display='none'
+  loginBtn.style.display='inline-block'
+  welcome.innerText = 'Buat Caption Otomatis'
+  limitInfo.innerText = ''
+
+  history.replaceState({},'',location.pathname)
 }
 
-/* ===== AUTH STATE ===== */
+/* ===== AUTH LISTENER ===== */
 supabase.auth.onAuthStateChange(async (event, session)=>{
-  if(event === 'SIGNED_IN'){
+  if(event === 'SIGNED_OUT'){
+    loginBtn.style.display='inline-block'
+    avatar.style.display='none'
+    dropdown.style.display='none'
+    return
+  }
+
+  if(session?.user){
     currentUser = session.user
+
     loginBtn.style.display='none'
     avatar.style.display='block'
     avatar.src = currentUser.user_metadata.picture
     welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
-    await loadPremium()
-    updateLimit()
-    history.replaceState({},'',location.pathname)
-  }
 
-  if(event === 'SIGNED_OUT'){
-    currentUser = null
-    isPremium = false
-    avatar.style.display='none'
-    dropdown.style.display='none'
-    loginBtn.style.display='inline-block'
-    welcome.innerText = 'Buat Caption Otomatis'
-    limitInfo.innerText = ''
+    await loadPremiumStatus()
+    updateLimitUI()
+
+    if(location.hash){
+      history.replaceState({},'',location.pathname)
+    }
   }
 })
 
 await supabase.auth.getSession()
 
-/* ===== PREMIUM SAFE ===== */
-async function loadPremium(){
+/* ===== PREMIUM CHECK ===== */
+async function loadPremiumStatus(){
   const { data } = await supabase
     .from('profiles')
     .select('is_premium')
     .eq('id', currentUser.id)
     .maybeSingle()
 
-  isPremium = data?.is_premium === true
+  isPremiumUser = data?.is_premium === true
 }
 
-/* ===== LIMIT ===== */
-function today(){ return new Date().toISOString().slice(0,10) }
+/* ===== LIMIT (LOCK GOOGLE ID) ===== */
+function today(){
+  return new Date().toISOString().slice(0,10)
+}
 
-function usage(){
-  const key = `u_${currentUser.id}`
-  const d = `d_${currentUser.id}`
-  if(localStorage.getItem(d)!==today()){
-    localStorage.setItem(d,today())
-    localStorage.setItem(key,0)
+function key(name){
+  return `${name}_${currentUser.id}`
+}
+
+function getUsage(){
+  if(!currentUser) return 0
+
+  if(localStorage.getItem(key('date')) !== today()){
+    localStorage.setItem(key('date'), today())
+    localStorage.setItem(key('count'), '0')
   }
-  return Number(localStorage.getItem(key)||0)
+  return Number(localStorage.getItem(key('count')))
 }
 
-function inc(){
-  localStorage.setItem(`u_${currentUser.id}`, usage()+1)
+function incrementUsage(){
+  localStorage.setItem(key('count'), getUsage()+1)
 }
 
-function updateLimit(){
-  limitInfo.innerText = isPremium
-    ? '⭐ Premium Unlimited'
-    : `Gratis: ${DAILY_LIMIT-usage()} sisa`
+function updateLimitUI(){
+  if(isPremiumUser){
+    limitInfo.innerText = '⭐ Premium Aktif — Unlimited Caption'
+  }else{
+    limitInfo.innerText =
+      `Gratis: ${DAILY_LIMIT - getUsage()} dari ${DAILY_LIMIT} caption tersisa hari ini`
+  }
 }
 
 /* ===== AVATAR ===== */
-avatar.onclick = ()=> dropdown.style.display =
-  dropdown.style.display==='block'?'none':'block'
+avatar.onclick = ()=>{
+  dropdown.style.display =
+    dropdown.style.display==='block'?'none':'block'
+}
+
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.auth')){
+    dropdown.style.display='none'
+  }
+})
 
 /* ===== GENERATE ===== */
 generate.onclick = ()=>{
-  if(!currentUser) return alert('Login dulu')
-  if(!isPremium && usage()>=DAILY_LIMIT)
-    return alert('Limit habis')
+  if(!currentUser) return alert('Silakan login dulu')
 
-  result.innerText = product.value || 'Isi produk dulu'
-  if(!isPremium) inc()
-  updateLimit()
+  if(!isPremiumUser && getUsage() >= DAILY_LIMIT){
+    alert('Limit harian habis 😢\nUpgrade ke Premium untuk unlimited')
+    return
+  }
+
+  if(!product.value) return alert('Produk wajib diisi')
+
+  result.innerText =
+`${product.value}
+
+Solusi praktis siap dipakai di ${getActive('platform')}
+Gaya: ${getActive('style')}`
+
+  if(!isPremiumUser) incrementUsage()
+  updateLimitUI()
 }
 
-copy.onclick = ()=> navigator.clipboard.writeText(result.innerText)
+/* ===== COPY ===== */
+copy.onclick = ()=>{
+  navigator.clipboard.writeText(result.innerText)
+  alert('Caption disalin')
+}
 </script>
 
 </body>

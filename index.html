@@ -187,6 +187,7 @@ const supabase = createClient(
   'PASTE_ANON_KEY_KAMU',
   {
     auth: {
+      flowType: 'implicit',        // 🔥 INI KUNCI NYA
       detectSessionInUrl: true,
       persistSession: true,
       autoRefreshToken: true

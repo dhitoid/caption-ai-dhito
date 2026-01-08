@@ -244,8 +244,8 @@ supabase.auth.onAuthStateChange(async (event, session)=>{
     avatar.src = currentUser.user_metadata.picture
     welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
 
-    await loadPremiumStatus()   // ⭐ TAMBAHAN
-    updateLimitUI()
+   loadPremiumStatus()
+   updateLimitUI()
 
     if(location.hash){
       history.replaceState({},'',location.pathname)
@@ -257,13 +257,22 @@ await supabase.auth.getSession()
 
 /* ===== PREMIUM CHECK (AMAN) ===== */
 async function loadPremiumStatus(){
-  const { data } = await supabase
-    .from('profiles')
-    .select('is_premium')
-    .eq('id', currentUser.id)
-    .maybeSingle()
+  try{
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('is_premium')
+      .eq('id', currentUser.id)
+      .maybeSingle()
 
-  isPremium = data?.is_premium === true
+    if(error) throw error
+
+    isPremium = data?.is_premium === true
+  }catch(e){
+    // ⚠️ kalau table / row belum ada
+    isPremium = false
+  }
+
+  updateLimitUI()
 }
 
 /* ===== LIMIT (TETAP) ===== */

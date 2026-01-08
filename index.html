@@ -54,7 +54,9 @@
   </style>
 </head>
 <body>
-
+  
+<button onclick="loginGoogle()">Login Google</button>
+<button onclick="logout()">Logout</button>
 <h1>📢 Caption AI</h1>
 
 <div class="card">
@@ -100,6 +102,16 @@ function generate() {
   const caption = `📌 ${product}\n\nCocok banget buat kamu yang lagi cari solusi terbaik.\nGaya: ${style} (${platform})`
   document.getElementById('result').innerText = caption
 }
+</script>
+
+<script src="auth.js"></script>
+<script>
+  checkUser().then(user => {
+    if (user) {
+      document.querySelector('h1').innerText =
+        '👋 Halo, ' + user.user_metadata.full_name
+    }
+  })
 </script>
 
 </body>

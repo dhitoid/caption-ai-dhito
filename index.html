@@ -33,13 +33,8 @@ header{
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);
 }
-.brand{
-  font-weight:700;
-  color:var(--primary-dark);
-}
-.auth{
-  position:relative;
-}
+.brand{font-weight:700;color:var(--primary-dark)}
+.auth{position:relative}
 .login-btn{
   background:var(--primary);
   color:#fff;
@@ -49,84 +44,52 @@ header{
   cursor:pointer;
 }
 .avatar{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  cursor:pointer;
-  display:none;
+  width:36px;height:36px;border-radius:50%;
+  cursor:pointer;display:none;
 }
 .dropdown{
-  position:absolute;
-  right:0;
-  top:46px;
-  background:#fff;
-  border:1px solid var(--border);
+  position:absolute;right:0;top:46px;
+  background:#fff;border:1px solid var(--border);
   border-radius:10px;
   box-shadow:0 10px 25px rgba(0,0,0,.08);
   display:none;
 }
 .dropdown button{
-  background:none;
-  border:none;
-  padding:10px 16px;
-  width:100%;
-  text-align:left;
-  cursor:pointer;
+  background:none;border:none;
+  padding:10px 16px;width:100%;
+  text-align:left;cursor:pointer;
 }
-main{
-  max-width:540px;
-  margin:auto;
-  padding:24px 20px;
-}
+main{max-width:540px;margin:auto;padding:24px 20px}
 .card{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:20px;
-  margin-bottom:20px;
+  padding:20px;margin-bottom:20px;
 }
 label{font-size:13px;color:var(--muted)}
 input,select{
-  width:100%;
-  padding:12px;
-  margin-bottom:14px;
-  border-radius:12px;
-  border:1px solid var(--border);
+  width:100%;padding:12px;margin-bottom:14px;
+  border-radius:12px;border:1px solid var(--border);
 }
 .primary{
   width:100%;
   background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;
-  border:none;
-  padding:14px;
-  border-radius:14px;
-  font-weight:600;
-  cursor:pointer;
+  color:#fff;border:none;padding:14px;
+  border-radius:14px;font-weight:600;
 }
 .result{
   background:#f8fafc;
   border:1px dashed var(--border);
   border-radius:14px;
-  padding:16px;
-  min-height:90px;
+  padding:16px;min-height:90px;
   white-space:pre-line;
 }
 .copy{
-  margin-top:12px;
-  background:#e0f2fe;
-  border:none;
-  padding:10px;
-  width:100%;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
+  margin-top:12px;background:#e0f2fe;
+  border:none;padding:10px;width:100%;
+  border-radius:10px;font-weight:600;
 }
-footer{
-  text-align:center;
-  font-size:12px;
-  color:var(--muted);
-  padding:20px;
-}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
 </style>
 </head>
 
@@ -134,10 +97,9 @@ footer{
 
 <header>
   <div class="brand">Caption AI</div>
-
   <div class="auth">
     <button id="loginBtn" class="login-btn">Login Google</button>
-    <img id="avatar" class="avatar" />
+    <img id="avatar" class="avatar">
     <div id="dropdown" class="dropdown">
       <button id="logoutBtn">Logout</button>
     </div>
@@ -146,7 +108,7 @@ footer{
 
 <main>
   <h1 id="welcome">Buat Caption Otomatis</h1>
-  <p style="color:var(--muted)">Caption profesional untuk Instagram, WhatsApp, TikTok</p>
+  <p style="color:var(--muted)">Caption profesional IG, WA, TikTok</p>
 
   <div class="card">
     <label>Platform</label>
@@ -184,82 +146,66 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
-  'PASTE_ANON_KEY_KAMU',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY',
   {
-    auth: {
-      flowType: 'implicit',        // 🔥 INI KUNCI NYA
-      detectSessionInUrl: true,
-      persistSession: true,
-      autoRefreshToken: true
+    auth:{
+      flowType:'pkce',            // ✅ WAJIB
+      detectSessionInUrl:true,
+      persistSession:true
     }
   }
 )
 
-/* ===== ELEMENT ===== */
-const loginBtn  = document.getElementById('loginBtn')
-const avatar    = document.getElementById('avatar')
-const dropdown  = document.getElementById('dropdown')
-const logoutBtn = document.getElementById('logoutBtn')
-const welcome   = document.getElementById('welcome')
+const loginBtn = document.getElementById('loginBtn')
+const avatar   = document.getElementById('avatar')
+const dropdown = document.getElementById('dropdown')
+const logoutBtn= document.getElementById('logoutBtn')
+const welcome  = document.getElementById('welcome')
 
-/* ===== LOGIN ===== */
-loginBtn.onclick = async () => {
+loginBtn.onclick = async ()=>{
   await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: location.origin + location.pathname
-    }
+    provider:'google',
+    options:{ redirectTo: location.origin + location.pathname }
   })
 }
 
-/* ===== LOGOUT ===== */
-logoutBtn.onclick = async () => {
+logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
   location.reload()
 }
 
-// === AUTH STATE LISTENER ===
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('AUTH EVENT:', event, session)
+supabase.auth.onAuthStateChange((event, session)=>{
+  if(session?.user){
+    const u = session.user
+    loginBtn.style.display='none'
+    avatar.style.display='block'
+    avatar.src = u.user_metadata.picture   // ✅ FIX
+    welcome.innerText = '👋 Halo, ' + u.user_metadata.full_name
 
-  if (session?.user) {
-    const user = session.user
-
-    loginBtn.style.display = 'none'
-    avatar.style.display = 'block'
-    avatar.src = user.user_metadata.avatar_url
-    welcome.innerText =
-      '👋 Halo, ' + user.user_metadata.full_name
-
-    // 🔥 bersihkan hash SETELAH session valid
-    if (location.hash) {
-      history.replaceState(null, '', location.pathname)
+    // ✅ BERSIHKAN TOKEN URL
+    if(location.hash){
+      history.replaceState({},'',location.pathname)
     }
   }
 })
 
-// 🔥 PAKSA SUPABASE PROSES TOKEN
+// 🔥 WAJIB agar session kebaca di Safari
 await supabase.auth.getSession()
 
-/* ===== AVATAR DROPDOWN ===== */
-avatar.onclick = () => {
+avatar.onclick = ()=>{
   dropdown.style.display =
-    dropdown.style.display === 'block' ? 'none' : 'block'
+    dropdown.style.display==='block'?'none':'block'
 }
 
-/* ===== CAPTION ===== */
-document.getElementById('generate').onclick = () => {
-  const p = product.value
-  if (!p) return alert('Produk wajib diisi')
-
+generate.onclick = ()=>{
+  if(!product.value) return alert('Produk wajib diisi')
   result.innerText =
-`${p}
+`${product.value}
 
-Solusi praktis untuk kamu.
-Siap dipakai di ${platform.value}`
+Solusi praktis siap dipakai di ${platform.value}`
 }
 
-document.getElementById('copy').onclick = () => {
+copy.onclick = ()=>{
   navigator.clipboard.writeText(result.innerText)
   alert('Caption disalin')
 }

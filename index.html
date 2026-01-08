@@ -1,92 +1,197 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Caption AI</title>
-  <meta name="theme-color" content="#0f172a">
 
-  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="manifest.json" />
 
   <style>
+    :root {
+      --bg: #0f172a;
+      --card: #020617;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --border: rgba(255,255,255,.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #fff;
       margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: .3px;
+    }
+
+    .auth button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    /* ===== MAIN ===== */
+    main {
+      max-width: 520px;
+      margin: 0 auto;
       padding: 20px;
     }
+
     h1 {
-      text-align: center;
-      margin-bottom: 10px;
+      font-size: 26px;
+      margin-bottom: 6px;
     }
-    .card {
-      background: #020617;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    label {
+
+    .subtitle {
+      color: var(--muted);
       font-size: 14px;
-      opacity: .8;
+      margin-bottom: 20px;
     }
-    input, select, textarea, button {
+
+    .card {
+      background: rgba(2,6,23,.85);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select,
+    textarea {
       width: 100%;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      font-size: 15px;
-    }
-    button {
-      background: #3b82f6;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid var(--border);
       color: #fff;
-      font-weight: bold;
+      font-size: 15px;
+      outline: none;
+      margin-bottom: 14px;
     }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    button.primary {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      color: #fff;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.primary:active {
+      transform: scale(.98);
+    }
+
     .caption-box {
       white-space: pre-line;
       background: #020617;
-      border-radius: 10px;
-      padding: 14px;
-      min-height: 80px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 15px;
+      min-height: 100px;
+      color: #e5e7eb;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 24px 0;
     }
   </style>
 </head>
 <body>
-  
-<button onclick="loginGoogle()">Login Google</button>
-<button onclick="logout()">Logout</button>
-<h1>📢 Caption AI</h1>
 
-<div class="card">
-  <label>Platform</label>
-  <select id="platform">
-    <option>Instagram</option>
-    <option>WhatsApp</option>
-    <option>TikTok</option>
-  </select>
-
-  <label>Produk / Jasa</label>
-  <input id="product" placeholder="Contoh: Rumah subsidi">
-
-  <label>Gaya Bahasa</label>
-  <select id="style">
-    <option>Soft selling</option>
-    <option>Hard selling</option>
-    <option>Santai</option>
-    <option>Profesional</option>
-  </select>
-
-  <button onclick="generate()">Buat Caption</button>
-</div>
-
-<div class="card">
-  <label>Hasil Caption</label>
-  <div id="result" class="caption-box">
-    Caption akan muncul di sini...
+<header>
+  <div class="brand">✍️ Caption AI</div>
+  <div class="auth">
+    <button onclick="loginGoogle()">Login</button>
+    <button onclick="logout()">Logout</button>
   </div>
-</div>
+</header>
+
+<main>
+  <h1 id="welcome">Buat Caption Sekali Klik</h1>
+  <div class="subtitle">
+    Caption otomatis untuk Instagram, WhatsApp, dan TikTok
+  </div>
+
+  <div class="card">
+    <label>Platform</label>
+    <select id="platform">
+      <option>Instagram</option>
+      <option>WhatsApp</option>
+      <option>TikTok</option>
+    </select>
+
+    <label>Produk / Jasa</label>
+    <input id="product" placeholder="Contoh: Rumah subsidi" />
+
+    <label>Gaya Bahasa</label>
+    <select id="style">
+      <option>Soft selling</option>
+      <option>Hard selling</option>
+      <option>Santai</option>
+      <option>Profesional</option>
+    </select>
+
+    <button class="primary" onclick="generate()">
+      🚀 Buat Caption
+    </button>
+  </div>
+
+  <div class="card">
+    <label>Hasil Caption</label>
+    <div id="result" class="caption-box">
+      Caption akan muncul di sini...
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2026 Caption AI · Powered by DHITO
+</footer>
 
 <script>
 function generate() {
@@ -95,23 +200,28 @@ function generate() {
   const style = document.getElementById('style').value
 
   if (!product) {
-    alert('Produk harus diisi')
+    alert('Produk / jasa wajib diisi')
     return
   }
 
-  const caption = `📌 ${product}\n\nCocok banget buat kamu yang lagi cari solusi terbaik.\nGaya: ${style} (${platform})`
+  const caption =
+`📌 ${product}
+
+Solusi tepat buat kamu yang lagi butuh pilihan terbaik.
+Cocok untuk platform ${platform} dengan gaya ${style}.`
+
   document.getElementById('result').innerText = caption
 }
 </script>
 
 <script src="auth.js"></script>
 <script>
-  checkUser().then(user => {
-    if (user) {
-      document.querySelector('h1').innerText =
-        '👋 Halo, ' + user.user_metadata.full_name
-    }
-  })
+checkUser().then(user => {
+  if (user) {
+    document.getElementById('welcome').innerText =
+      '👋 Halo, ' + user.user_metadata.full_name
+  }
+})
 </script>
 
 </body>

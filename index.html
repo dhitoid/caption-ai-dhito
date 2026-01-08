@@ -5,60 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Caption AI</title>
 
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#38bdf8" />
   <link rel="manifest" href="manifest.json" />
 
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #020617;
-      --muted: #94a3b8;
-      --primary: #3b82f6;
-      --border: rgba(255,255,255,.08);
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #38bdf8;
+      --primary-dark: #0ea5e9;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-      background: linear-gradient(180deg, #020617, #0f172a);
-      color: #fff;
+      background: linear-gradient(180deg, #f0f9ff, var(--bg));
+      color: var(--text);
       min-height: 100vh;
     }
 
     /* ===== HEADER ===== */
     header {
+      background: #ffffffcc;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(10px);
     }
 
     .brand {
       font-weight: 700;
       font-size: 18px;
-      letter-spacing: .3px;
+      color: var(--primary-dark);
     }
 
     .auth button {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: #fff;
       padding: 8px 14px;
       border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
       font-size: 14px;
+    }
+
+    .auth button.primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
     }
 
     /* ===== MAIN ===== */
     main {
-      max-width: 520px;
+      max-width: 540px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 24px 20px;
     }
 
     h1 {
@@ -69,16 +75,16 @@
     .subtitle {
       color: var(--muted);
       font-size: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .card {
-      background: rgba(2,6,23,.85);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      box-shadow: 0 10px 25px rgba(15,23,42,.06);
     }
 
     label {
@@ -88,49 +94,49 @@
       margin-bottom: 6px;
     }
 
-    input,
-    select,
-    textarea {
+    input, select {
       width: 100%;
       padding: 12px 14px;
-      border-radius: 10px;
-      background: #020617;
+      border-radius: 12px;
       border: 1px solid var(--border);
-      color: #fff;
       font-size: 15px;
-      outline: none;
       margin-bottom: 14px;
     }
 
-    input::placeholder {
-      color: #64748b;
-    }
+    input::placeholder { color: #94a3b8; }
 
     button.primary {
       width: 100%;
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #fff;
+      border: none;
       padding: 14px;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 16px;
       font-weight: 600;
-      cursor: pointer;
     }
 
-    button.primary:active {
-      transform: scale(.98);
-    }
-
-    .caption-box {
-      white-space: pre-line;
-      background: #020617;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+    /* ===== RESULT ===== */
+    .result-box {
+      position: relative;
+      background: #f8fafc;
+      border-radius: 14px;
       padding: 16px;
+      border: 1px dashed var(--border);
       font-size: 15px;
-      min-height: 100px;
-      color: #e5e7eb;
+      white-space: pre-line;
+      min-height: 90px;
+    }
+
+    .copy-btn {
+      margin-top: 12px;
+      background: #e0f2fe;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--primary-dark);
     }
 
     footer {
@@ -144,17 +150,17 @@
 <body>
 
 <header>
-  <div class="brand">✍️ Caption AI</div>
+  <div class="brand">Caption AI</div>
   <div class="auth">
-    <button onclick="loginGoogle()">Login</button>
-    <button onclick="logout()">Logout</button>
+    <button id="loginBtn" class="primary" onclick="loginGoogle()">Login Google</button>
+    <button id="logoutBtn" onclick="logout()" style="display:none">Logout</button>
   </div>
 </header>
 
 <main>
-  <h1 id="welcome">Buat Caption Sekali Klik</h1>
+  <h1 id="welcome">Buat Caption Otomatis</h1>
   <div class="subtitle">
-    Caption otomatis untuk Instagram, WhatsApp, dan TikTok
+    Caption profesional untuk Instagram, WhatsApp, dan TikTok
   </div>
 
   <div class="card">
@@ -176,28 +182,27 @@
       <option>Profesional</option>
     </select>
 
-    <button class="primary" onclick="generate()">
-      🚀 Buat Caption
-    </button>
+    <button class="primary" onclick="generate()">🚀 Buat Caption</button>
   </div>
 
   <div class="card">
     <label>Hasil Caption</label>
-    <div id="result" class="caption-box">
-      Caption akan muncul di sini...
+    <div id="result" class="result-box">
+      —
     </div>
+    <button class="copy-btn" onclick="copyCaption()">📋 Salin Caption</button>
   </div>
 </main>
 
 <footer>
-  © 2026 Caption AI · Powered by DHITO
+  © 2026 Caption AI · Powered By DHITO
 </footer>
 
 <script>
 function generate() {
-  const platform = document.getElementById('platform').value
+  const platform = platform.value
   const product = document.getElementById('product').value
-  const style = document.getElementById('style').value
+  const style = style.value
 
   if (!product) {
     alert('Produk / jasa wajib diisi')
@@ -205,12 +210,17 @@ function generate() {
   }
 
   const caption =
-`📌 ${product}
+`${product}
 
-Solusi tepat buat kamu yang lagi butuh pilihan terbaik.
-Cocok untuk platform ${platform} dengan gaya ${style}.`
+Solusi praktis yang cocok untuk kamu.
+Gaya ${style}, siap dipakai di ${platform}.`
 
-  document.getElementById('result').innerText = caption
+  result.innerText = caption
+}
+
+function copyCaption() {
+  navigator.clipboard.writeText(result.innerText)
+  alert('Caption berhasil disalin!')
 }
 </script>
 
@@ -220,6 +230,9 @@ checkUser().then(user => {
   if (user) {
     document.getElementById('welcome').innerText =
       '👋 Halo, ' + user.user_metadata.full_name
+
+    loginBtn.style.display = 'none'
+    logoutBtn.style.display = 'inline-block'
   }
 })
 </script>

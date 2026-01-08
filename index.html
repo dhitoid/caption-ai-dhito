@@ -1,159 +1,152 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caption AI</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caption AI</title>
 
-  <meta name="theme-color" content="#38bdf8" />
-  <link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#38bdf8" />
 
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --primary: #38bdf8;
-      --primary-dark: #0ea5e9;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e5e7eb;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-      background: linear-gradient(180deg, #f0f9ff, var(--bg));
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    header {
-      background: #ffffffcc;
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand {
-      font-weight: 700;
-      font-size: 18px;
-      color: var(--primary-dark);
-    }
-
-    .auth button {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #fff;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .auth button.primary {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-    }
-
-    main {
-      max-width: 540px;
-      margin: 0 auto;
-      padding: 24px 20px;
-    }
-
-    h1 { font-size: 26px; margin-bottom: 6px; }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 22px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 25px rgba(15,23,42,.06);
-    }
-
-    label {
-      font-size: 13px;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 15px;
-      margin-bottom: 14px;
-    }
-
-    button.primary {
-      width: 100%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .result-box {
-      background: #f8fafc;
-      border-radius: 14px;
-      padding: 16px;
-      border: 1px dashed var(--border);
-      font-size: 15px;
-      white-space: pre-line;
-      min-height: 90px;
-    }
-
-    .copy-btn {
-      margin-top: 12px;
-      background: #e0f2fe;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      border-radius: 10px;
-      font-weight: 600;
-      color: var(--primary-dark);
-      cursor: pointer;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted);
-      padding: 24px 0;
-    }
-  </style>
+<style>
+:root{
+  --bg:#f8fafc;
+  --card:#fff;
+  --primary:#38bdf8;
+  --primary-dark:#0ea5e9;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e5e7eb;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  background:linear-gradient(180deg,#f0f9ff,var(--bg));
+  color:var(--text);
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  background:#ffffffcc;
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.brand{
+  font-weight:700;
+  color:var(--primary-dark);
+}
+.auth{
+  position:relative;
+}
+.login-btn{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  display:none;
+}
+.dropdown{
+  position:absolute;
+  right:0;
+  top:46px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  display:none;
+}
+.dropdown button{
+  background:none;
+  border:none;
+  padding:10px 16px;
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+}
+main{
+  max-width:540px;
+  margin:auto;
+  padding:24px 20px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+}
+label{font-size:13px;color:var(--muted)}
+input,select{
+  width:100%;
+  padding:12px;
+  margin-bottom:14px;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+.primary{
+  width:100%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  border:none;
+  padding:14px;
+  border-radius:14px;
+  font-weight:600;
+  cursor:pointer;
+}
+.result{
+  background:#f8fafc;
+  border:1px dashed var(--border);
+  border-radius:14px;
+  padding:16px;
+  min-height:90px;
+  white-space:pre-line;
+}
+.copy{
+  margin-top:12px;
+  background:#e0f2fe;
+  border:none;
+  padding:10px;
+  width:100%;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+}
+footer{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  padding:20px;
+}
+</style>
 </head>
+
 <body>
 
 <header>
   <div class="brand">Caption AI</div>
+
   <div class="auth">
-    <button id="loginBtn" class="primary">Login Google</button>
-    <button id="logoutBtn" style="display:none">Logout</button>
+    <button id="loginBtn" class="login-btn">Login Google</button>
+    <img id="avatar" class="avatar" />
+    <div id="dropdown" class="dropdown">
+      <button id="logoutBtn">Logout</button>
+    </div>
   </div>
 </header>
 
 <main>
   <h1 id="welcome">Buat Caption Otomatis</h1>
-  <div class="subtitle">Caption profesional untuk Instagram, WhatsApp, dan TikTok</div>
+  <p style="color:var(--muted)">Caption profesional untuk Instagram, WhatsApp, TikTok</p>
 
   <div class="card">
     <label>Platform</label>
@@ -164,7 +157,7 @@
     </select>
 
     <label>Produk / Jasa</label>
-    <input id="product" placeholder="Contoh: Rumah subsidi" />
+    <input id="product" placeholder="Contoh: Rumah subsidi">
 
     <label>Gaya Bahasa</label>
     <select id="style">
@@ -174,96 +167,86 @@
       <option>Profesional</option>
     </select>
 
-    <button id="generateBtn" class="primary">🚀 Buat Caption</button>
+    <button id="generate" class="primary">🚀 Buat Caption</button>
   </div>
 
   <div class="card">
     <label>Hasil Caption</label>
-    <div id="result" class="result-box">—</div>
-    <button id="copyBtn" class="copy-btn">📋 Salin Caption</button>
+    <div id="result" class="result">—</div>
+    <button id="copy" class="copy">📋 Salin Caption</button>
   </div>
 </main>
 
-<footer>© 2026 Caption AI · Powered By DHITO</footer>
+<footer>© 2026 Caption AI · By DHITO</footer>
 
 <script type="module">
-  // ===== BUKTI JS HIDUP =====
-  console.log('JS LOADED');
-  alert('JS LOADED');
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-  // ===== IMPORT SUPABASE (ES MODULE) =====
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const supabase = createClient(
+  'https://lgkbrgwgdgqfhidjivcr.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY'
+)
 
-  const SUPABASE_URL = 'https://lgkbrgwgdgqfhidjivcr.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY';
+/* ===== CLEAN TOKEN URL ===== */
+if (location.hash.includes('access_token')) {
+  history.replaceState(null,'',location.pathname)
+}
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ===== ELEMENT ===== */
+const loginBtn = document.getElementById('loginBtn')
+const avatar = document.getElementById('avatar')
+const dropdown = document.getElementById('dropdown')
+const logoutBtn = document.getElementById('logoutBtn')
+const welcome = document.getElementById('welcome')
 
-  // ===== ELEMENT =====
-  const loginBtn   = document.getElementById('loginBtn');
-  const logoutBtn  = document.getElementById('logoutBtn');
-  const generateBtn = document.getElementById('generateBtn');
-  const copyBtn    = document.getElementById('copyBtn');
-
-  const platformEl = document.getElementById('platform');
-  const styleEl    = document.getElementById('style');
-  const productEl  = document.getElementById('product');
-  const resultEl   = document.getElementById('result');
-  const welcomeEl  = document.getElementById('welcome');
-
-  // ===== LOGIN GOOGLE =====
-  loginBtn.addEventListener('click', async () => {
-    alert('LOGIN CLICKED');
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
-    });
-
-    if (error) alert(error.message);
-  });
-
-  // ===== LOGOUT =====
-  logoutBtn.addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    location.reload();
-  });
-
-  // ===== GENERATE CAPTION =====
-  generateBtn.addEventListener('click', () => {
-    const platform = platformEl.value;
-    const style = styleEl.value;
-    const product = productEl.value;
-
-    if (!product) {
-      alert('Produk / jasa wajib diisi');
-      return;
+/* ===== LOGIN ===== */
+loginBtn.onclick = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider:'google',
+    options:{
+      redirectTo: location.origin + location.pathname
     }
+  })
+}
 
-    resultEl.innerText =
-`${product}
+/* ===== LOGOUT ===== */
+logoutBtn.onclick = async () => {
+  await supabase.auth.signOut()
+  location.reload()
+}
 
-Solusi praktis yang cocok untuk kamu.
-Gaya ${style}, siap dipakai di ${platform}.`;
-  });
+/* ===== CHECK SESSION ===== */
+const { data } = await supabase.auth.getSession()
+const user = data.session?.user
 
-  // ===== COPY =====
-  copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(resultEl.innerText);
-    alert('Caption berhasil disalin!');
-  });
+if (user) {
+  loginBtn.style.display='none'
+  avatar.style.display='block'
+  avatar.src = user.user_metadata.avatar_url
+  welcome.innerText = '👋 Halo, ' + user.user_metadata.full_name
+}
 
-  // ===== CHECK LOGIN =====
-  const { data } = await supabase.auth.getSession();
+/* ===== AVATAR DROPDOWN ===== */
+avatar.onclick = () => {
+  dropdown.style.display =
+    dropdown.style.display === 'block' ? 'none' : 'block'
+}
 
-  if (data.session?.user) {
-    welcomeEl.innerText =
-      '👋 Halo, ' + (data.session.user.user_metadata.full_name || 'User');
-    loginBtn.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
-  }
+/* ===== CAPTION ===== */
+document.getElementById('generate').onclick = () => {
+  const p = product.value
+  if(!p) return alert('Produk wajib diisi')
+  result.innerText =
+`${p}
+
+Solusi praktis untuk kamu.
+Siap dipakai di ${platform.value}`
+}
+
+document.getElementById('copy').onclick = () => {
+  navigator.clipboard.writeText(result.innerText)
+  alert('Caption disalin')
+}
 </script>
 
 </body>

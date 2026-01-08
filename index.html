@@ -184,26 +184,28 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY'
+  'PASTE_ANON_KEY_KAMU',
+  {
+    auth: {
+      detectSessionInUrl: true,
+      persistSession: true,
+      autoRefreshToken: true
+    }
+  }
 )
 
-/* ===== CLEAN TOKEN URL ===== */
-if (location.hash.includes('access_token')) {
-  history.replaceState(null,'',location.pathname)
-}
-
 /* ===== ELEMENT ===== */
-const loginBtn = document.getElementById('loginBtn')
-const avatar = document.getElementById('avatar')
-const dropdown = document.getElementById('dropdown')
+const loginBtn  = document.getElementById('loginBtn')
+const avatar    = document.getElementById('avatar')
+const dropdown  = document.getElementById('dropdown')
 const logoutBtn = document.getElementById('logoutBtn')
-const welcome = document.getElementById('welcome')
+const welcome   = document.getElementById('welcome')
 
 /* ===== LOGIN ===== */
 loginBtn.onclick = async () => {
   await supabase.auth.signInWithOAuth({
-    provider:'google',
-    options:{
+    provider: 'google',
+    options: {
       redirectTo: location.origin + location.pathname
     }
   })
@@ -215,16 +217,23 @@ logoutBtn.onclick = async () => {
   location.reload()
 }
 
-/* ===== CHECK SESSION ===== */
-const { data } = await supabase.auth.getSession()
-const user = data.session?.user
+/* ===== HANDLE SESSION ===== */
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    const user = session.user
 
-if (user) {
-  loginBtn.style.display='none'
-  avatar.style.display='block'
-  avatar.src = user.user_metadata.avatar_url
-  welcome.innerText = '👋 Halo, ' + user.user_metadata.full_name
-}
+    // Update UI
+    loginBtn.style.display = 'none'
+    avatar.style.display = 'block'
+    avatar.src = user.user_metadata.avatar_url
+    welcome.innerText = '👋 Halo, ' + user.user_metadata.full_name
+
+    // 🔥 BERSIHKAN HASH (INI PALING PENTING)
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname)
+    }
+  }
+})
 
 /* ===== AVATAR DROPDOWN ===== */
 avatar.onclick = () => {
@@ -235,7 +244,8 @@ avatar.onclick = () => {
 /* ===== CAPTION ===== */
 document.getElementById('generate').onclick = () => {
   const p = product.value
-  if(!p) return alert('Produk wajib diisi')
+  if (!p) return alert('Produk wajib diisi')
+
   result.innerText =
 `${p}
 

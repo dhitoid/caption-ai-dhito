@@ -1,4 +1,3 @@
-caption ai dhito
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -193,9 +192,9 @@ const copy      = document.getElementById('copy')
 
 const DAILY_LIMIT = 5
 let currentUser = null
-let isPremiumUser = false
+let isPremium = false   // ⭐ TAMBAHAN AMAN
 
-/* ===== OPTIONS ===== */
+/* ===== OPTION ===== */
 function setupOptions(id){
   const group = document.getElementById(id)
   group.querySelectorAll('.option').forEach(opt=>{
@@ -219,12 +218,12 @@ loginBtn.onclick = async ()=>{
   })
 }
 
-/* ===== LOGOUT (IOS SAFE) ===== */
+/* ===== LOGOUT ===== */
 logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
 
   currentUser = null
-  isPremiumUser = false
+  isPremium = false
 
   avatar.style.display='none'
   dropdown.style.display='none'
@@ -235,15 +234,8 @@ logoutBtn.onclick = async ()=>{
   history.replaceState({},'',location.pathname)
 }
 
-/* ===== AUTH LISTENER ===== */
+/* ===== AUTH ===== */
 supabase.auth.onAuthStateChange(async (event, session)=>{
-  if(event === 'SIGNED_OUT'){
-    loginBtn.style.display='inline-block'
-    avatar.style.display='none'
-    dropdown.style.display='none'
-    return
-  }
-
   if(session?.user){
     currentUser = session.user
 
@@ -252,7 +244,7 @@ supabase.auth.onAuthStateChange(async (event, session)=>{
     avatar.src = currentUser.user_metadata.picture
     welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
 
-    await loadPremiumStatus()
+    await loadPremiumStatus()   // ⭐ TAMBAHAN
     updateLimitUI()
 
     if(location.hash){
@@ -263,7 +255,7 @@ supabase.auth.onAuthStateChange(async (event, session)=>{
 
 await supabase.auth.getSession()
 
-/* ===== PREMIUM CHECK ===== */
+/* ===== PREMIUM CHECK (AMAN) ===== */
 async function loadPremiumStatus(){
   const { data } = await supabase
     .from('profiles')
@@ -271,34 +263,34 @@ async function loadPremiumStatus(){
     .eq('id', currentUser.id)
     .maybeSingle()
 
-  isPremiumUser = data?.is_premium === true
+  isPremium = data?.is_premium === true
 }
 
-/* ===== LIMIT (LOCK GOOGLE ID) ===== */
+/* ===== LIMIT (TETAP) ===== */
 function today(){
   return new Date().toISOString().slice(0,10)
-}
-
-function key(name){
-  return `${name}_${currentUser.id}`
 }
 
 function getUsage(){
   if(!currentUser) return 0
 
-  if(localStorage.getItem(key('date')) !== today()){
-    localStorage.setItem(key('date'), today())
-    localStorage.setItem(key('count'), '0')
+  const d = `d_${currentUser.id}`
+  const c = `c_${currentUser.id}`
+
+  if(localStorage.getItem(d) !== today()){
+    localStorage.setItem(d,today())
+    localStorage.setItem(c,'0')
   }
-  return Number(localStorage.getItem(key('count')))
+  return Number(localStorage.getItem(c))
 }
 
 function incrementUsage(){
-  localStorage.setItem(key('count'), getUsage()+1)
+  const c = `c_${currentUser.id}`
+  localStorage.setItem(c, getUsage()+1)
 }
 
 function updateLimitUI(){
-  if(isPremiumUser){
+  if(isPremium){
     limitInfo.innerText = '⭐ Premium Aktif — Unlimited Caption'
   }else{
     limitInfo.innerText =
@@ -312,18 +304,12 @@ avatar.onclick = ()=>{
     dropdown.style.display==='block'?'none':'block'
 }
 
-document.addEventListener('click', e=>{
-  if(!e.target.closest('.auth')){
-    dropdown.style.display='none'
-  }
-})
-
 /* ===== GENERATE ===== */
 generate.onclick = ()=>{
   if(!currentUser) return alert('Silakan login dulu')
 
-  if(!isPremiumUser && getUsage() >= DAILY_LIMIT){
-    alert('Limit harian habis 😢\nUpgrade ke Premium untuk unlimited')
+  if(!isPremium && getUsage() >= DAILY_LIMIT){
+    alert('Limit harian habis 😢')
     return
   }
 
@@ -335,7 +321,7 @@ generate.onclick = ()=>{
 Solusi praktis siap dipakai di ${getActive('platform')}
 Gaya: ${getActive('style')}`
 
-  if(!isPremiumUser) incrementUsage()
+  if(!isPremium) incrementUsage()
   updateLimitUI()
 }
 

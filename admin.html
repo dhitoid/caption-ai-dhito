@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+body{font-family:sans-serif;background:#f8fafc;padding:30px}
+.card{background:#fff;padding:20px;border-radius:12px;max-width:600px;margin:auto}
+button{padding:10px 14px;margin:5px}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Admin Panel</h2>
+
+  <input id="email" placeholder="Email user">
+  <button onclick="search()">Cari</button>
+
+  <div id="result"></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const supabase = createClient(
+  'https://lgkbrgwgdgqfhidjivcr.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgO'
+)
+
+let currentUser = null
+
+supabase.auth.onAuthStateChange(async (_, session)=>{
+  if(!session?.user){
+    await supabase.auth.signInWithOAuth({ provider:'google' })
+    return
+  }
+
+  currentUser = session.user
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', currentUser.id)
+    .single()
+
+  if(data?.role !== 'admin'){
+    alert('Bukan admin')
+    await supabase.auth.signOut()
+    location.href = '/'
+  }
+})
+
+window.search = async ()=>{
+  const email = document.getElementById('email').value
+  if(!email) return alert('Isi email')
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('id,email,is_premium')
+    .ilike('email', email)
+    .single()
+
+  if(!data){
+    result.innerHTML = 'User tidak ditemukan'
+    return
+  }
+
+  result.innerHTML = `
+    <p>${data.email}</p>
+    <p>Status: ${data.is_premium ? 'Premium' : 'Free'}</p>
+    <button onclick="setPremium('${data.id}', true)">Premium</button>
+    <button onclick="setPremium('${data.id}', false)">Free</button>
+  `
+}
+
+window.setPremium = async (id, status)=>{
+  await supabase
+    .from('profiles')
+    .update({ is_premium: status })
+    .eq('id', id)
+
+  alert('Status diubah')
+}
+</script>
+</body>
+</html>

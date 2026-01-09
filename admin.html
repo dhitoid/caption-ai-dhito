@@ -54,13 +54,26 @@ button{
   padding:60px 20px;
   color:#64748b;
 }
+.login-btn{
+  background:#38bdf8;
+  color:#fff;
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+}
 </style>
 </head>
 
 <body>
 
 <header>👑 Admin Premium Panel</header>
-<main id="app"></main>
+<main id="app">
+  <div class="center">
+    <button id="loginBtn" class="login-btn">Login Google</button>
+  </div>
+</main>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -70,76 +83,76 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY'
 )
 
-// ⚠️ EMAIL ADMIN
 const ADMIN_EMAIL = 'nourmaand@gmail.com'
 const app = document.getElementById('app')
+const loginBtn = document.getElementById('loginBtn')
 
-/* ===== CHECK LOGIN ===== */
-const { data:{ session } } = await supabase.auth.getSession()
-
-if(!session){
-  app.innerHTML = `
-    <div class="center">
-      🔒 Silakan login Google terlebih dahulu
-    </div>
-  `
-  throw new Error('NOT LOGGED IN')
+// ===== LOGIN GOOGLE =====
+loginBtn.onclick = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider:'google',
+    options:{ redirectTo: location.origin + location.pathname }
+  })
 }
 
-/* ===== CHECK ADMIN ===== */
-const isAdmin = session.user.email === ADMIN_EMAIL
-
-if(!isAdmin){
-  app.innerHTML = `
-    <div class="center">
-      🚫 Akun ini bukan admin
-    </div>
-  `
-  throw new Error('NOT ADMIN')
-}
-
-/* ===== LOAD USERS ===== */
-const { data: users, error } = await supabase
-  .from('profiles')
-  .select('id, is_premium')
-
-if(error){
-  app.innerHTML = `<div class="center">Gagal memuat data</div>`
-  throw error
-}
-
-/* ===== RENDER ===== */
-users.forEach(u=>{
-  const div = document.createElement('div')
-  div.className = 'card'
-  div.innerHTML = `
-    <div>
-      <b>${u.id}</b><br>
-      <span class="badge ${u.is_premium?'premium':'free'}">
-        ${u.is_premium?'⭐ Premium':'Free'}
-      </span>
-    </div>
-    <button class="${u.is_premium?'disable':'enable'}">
-      ${u.is_premium?'Disable':'Enable'}
-    </button>
-  `
-
-  div.querySelector('button').onclick = async ()=>{
-    await fetch(
-      'https://lgkbrgwgdgqfhidjivcr.supabase.co/functions/v1/set-premium',
-      {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          user_id: u.id,
-          premium: !u.is_premium
-        })
-      }
-    )
-    location.reload()
+// ===== SESSION LISTENER =====
+supabase.auth.onAuthStateChange(async (event, session) => {
+  app.innerHTML = '' // reset UI
+  if(!session?.user){
+    app.innerHTML = `<div class="center"><button id="loginBtn" class="login-btn">Login Google</button></div>`
+    document.getElementById('loginBtn').onclick = loginBtn.onclick
+    return
   }
 
-  app.appendChild(div)
+  const user = session.user
+  const isAdmin = user.email === ADMIN_EMAIL
+
+  if(!isAdmin){
+    app.innerHTML = `<div class="center">🚫 Akun ini bukan admin</div>`
+    return
+  }
+
+  // ===== LOAD USERS =====
+  const { data: users, error } = await supabase
+    .from('profiles')
+    .select('id, is_premium')
+
+  if(error){
+    app.innerHTML = `<div class="center">Gagal memuat data</div>`
+    return
+  }
+
+  // ===== RENDER USER LIST =====
+  users.forEach(u=>{
+    const div = document.createElement('div')
+    div.className = 'card'
+    div.innerHTML = `
+      <div>
+        <b>${u.id}</b><br>
+        <span class="badge ${u.is_premium?'premium':'free'}">
+          ${u.is_premium?'⭐ Premium':'Free'}
+        </span>
+      </div>
+      <button class="${u.is_premium?'disable':'enable'}">
+        ${u.is_premium?'Disable':'Enable'}
+      </button>
+    `
+    div.querySelector('button').onclick = async () => {
+      await fetch(
+        'https://lgkbrgwgdgqfhidjivcr.supabase.co/functions/v1/set-premium',
+        {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            user_id: u.id,
+            premium: !u.is_premium
+          })
+        }
+      )
+      location.reload()
+    }
+    app.appendChild(div)
+  })
 })
 </script>
 

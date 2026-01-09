@@ -192,14 +192,13 @@ const copy      = document.getElementById('copy')
 
 const DAILY_LIMIT = 5
 let currentUser = null
-let isPremium = false   // ⭐ TAMBAHAN AMAN
+let isPremium = false
 
 /* ===== OPTION ===== */
 function setupOptions(id){
-  const group = document.getElementById(id)
-  group.querySelectorAll('.option').forEach(opt=>{
+  document.querySelectorAll(`#${id} .option`).forEach(opt=>{
     opt.onclick = ()=>{
-      group.querySelectorAll('.option').forEach(o=>o.classList.remove('active'))
+      document.querySelectorAll(`#${id} .option`).forEach(o=>o.classList.remove('active'))
       opt.classList.add('active')
     }
   })
@@ -214,76 +213,98 @@ const getActive = id =>
 loginBtn.onclick = async ()=>{
   await supabase.auth.signInWithOAuth({
     provider:'google',
-    options:{ redirectTo: location.origin + location.pathname }
+    options:{ redirectTo: location.href }
   })
 }
 
 /* ===== LOGOUT ===== */
 logoutBtn.onclick = async ()=>{
   await supabase.auth.signOut()
-
-  currentUser = null
-  isPremium = false
-
-  avatar.style.display='none'
-  dropdown.style.display='none'
-  loginBtn.style.display='inline-block'
-  welcome.innerText = 'Buat Caption Otomatis'
-  limitInfo.innerText = ''
-
-  history.replaceState({},'',location.pathname)
 }
 
-/* ===== AUTH ===== */
-supabase.auth.onAuthStateChange(async (event, session)=>{
-  if(session?.user){
-    currentUser = session.user
+/* ===== AUTO CREATE PROFILE ===== */
+async function ensureProfile(user){
+  const { data } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle()
 
-    loginBtn.style.display='none'
-    avatar.style.display='block'
-    avatar.src = currentUser.user_metadata.picture
-    welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
+  if(!data){
+    await supabase.from('profiles').insert({
+      id: user.id,
+      is_premium: false
+    })
+  }
+}
 
-   loadPremiumStatus()
-   updateLimitUI()
+/* ===== AUTH LISTENER ===== */
+supabase.auth.onAuthStateChange(async (_, session)=>{
+  if(!session?.user){
+    currentUser = null
+    isPremium = false
+    avatar.style.display = 'none'
+    dropdown.style.display = 'none'
+    loginBtn.style.display = 'inline-block'
+    welcome.innerText = 'Buat Caption Otomatis'
+    limitInfo.innerText = ''
+    return
+  }
 
-    if(location.hash){
-      history.replaceState({},'',location.pathname)
-    }
+  currentUser = session.user
+
+  loginBtn.style.display = 'none'
+  avatar.style.display = 'block'
+  avatar.src = currentUser.user_metadata.picture
+  welcome.innerText = '👋 Halo, ' + currentUser.user_metadata.full_name
+
+  await ensureProfile(currentUser)
+  await loadPremiumStatus()
+  updateLimitUI()
+
+  if(location.hash){
+    history.replaceState({},'',location.pathname)
   }
 })
 
-await supabase.auth.getSession()
+/* ===== SESSION INIT (WAJIB) ===== */
+const { data:{ session } } = await supabase.auth.getSession()
+if(session?.user){
+  currentUser = session.user
+  loginBtn.style.display='none'
+  avatar.style.display='block'
+  avatar.src=currentUser.user_metadata.picture
+  welcome.innerText='👋 Halo, '+currentUser.user_metadata.full_name
+  await ensureProfile(currentUser)
+  await loadPremiumStatus()
+  updateLimitUI()
+}
 
-/* ===== PREMIUM CHECK (AMAN) ===== */
+/* ===== PREMIUM CHECK ===== */
 async function loadPremiumStatus(){
   try{
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('profiles')
       .select('is_premium')
       .eq('id', currentUser.id)
       .maybeSingle()
 
-    if(error) throw error
     isPremium = data?.is_premium === true
   }catch{
     isPremium = false
   }
-  updateLimitUI()
 }
 
-/* ===== LIMIT (TETAP) ===== */
+/* ===== LIMIT ===== */
 function today(){
   return new Date().toISOString().slice(0,10)
 }
 
 function getUsage(){
   if(!currentUser) return 0
-
   const d = `d_${currentUser.id}`
   const c = `c_${currentUser.id}`
-
-  if(localStorage.getItem(d) !== today()){
+  if(localStorage.getItem(d)!==today()){
     localStorage.setItem(d,today())
     localStorage.setItem(c,'0')
   }
@@ -291,22 +312,18 @@ function getUsage(){
 }
 
 function incrementUsage(){
-  const c = `c_${currentUser.id}`
-  localStorage.setItem(c, getUsage()+1)
+  localStorage.setItem(`c_${currentUser.id}`, getUsage()+1)
 }
 
 function updateLimitUI(){
-  if(isPremium){
-    limitInfo.innerText = '⭐ Premium Aktif — Unlimited Caption'
-  }else{
-    const used = getUsage()
-    limitInfo.innerText =
-      `Gratis: ${DAILY_LIMIT-used} dari ${DAILY_LIMIT} caption tersisa hari ini`
-  }
+  limitInfo.innerText = isPremium
+    ? '⭐ Premium Aktif — Unlimited Caption'
+    : `Gratis: ${DAILY_LIMIT-getUsage()} dari ${DAILY_LIMIT} caption tersisa hari ini`
 }
 
 /* ===== AVATAR ===== */
 avatar.onclick = ()=>{
+  if(!currentUser) return
   dropdown.style.display =
     dropdown.style.display==='block'?'none':'block'
 }
@@ -316,9 +333,9 @@ generate.onclick = ()=>{
   if(!currentUser) return alert('Silakan login dulu')
 
   if(!isPremium && getUsage() >= DAILY_LIMIT){
-  alert('Limit harian habis 😢\nUpgrade ke Premium')
-  return
-}
+    alert('Limit harian habis 😢\nUpgrade ke Premium')
+    return
+  }
 
   if(!product.value) return alert('Produk wajib diisi')
 

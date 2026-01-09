@@ -6,74 +6,169 @@
 <title>Admin Premium</title>
 
 <style>
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#0f172a;
+  --muted:#64748b;
+  --primary:#0ea5e9;
+  --green:#22c55e;
+  --red:#ef4444;
+}
+
+*{box-sizing:border-box}
+
 body{
+  margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
-  background:#f8fafc;
+  background:var(--bg);
+  color:var(--text);
+}
+
+header{
+  padding:16px 20px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  font-weight:700;
+}
+
+main{
+  max-width:720px;
+  margin:auto;
   padding:20px;
 }
+
 .card{
-  background:#fff;
-  border-radius:14px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
   padding:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   margin-bottom:12px;
-  border:1px solid #e5e7eb;
 }
+
+.user{
+  font-size:13px;
+}
+.user b{
+  font-size:14px;
+}
+
+.badge{
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  margin-top:4px;
+  display:inline-block;
+}
+.premium{background:#ecfeff;color:#0369a1}
+.free{background:#f1f5f9;color:#475569}
+
 button{
-  padding:8px 12px;
   border:none;
-  border-radius:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:600;
   cursor:pointer;
 }
-.on{background:#22c55e;color:#fff}
-.off{background:#ef4444;color:#fff}
+.enable{background:var(--green);color:#fff}
+.disable{background:var(--red);color:#fff}
+
+.loading{
+  text-align:center;
+  color:var(--muted);
+  padding:40px 0;
+}
 </style>
 </head>
 
 <body>
 
-<h2>👑 Admin Premium Panel</h2>
-<div id="list"></div>
+<header>👑 Admin Premium Panel</header>
+
+<main>
+  <div id="list" class="loading">Loading users...</div>
+</main>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabase = createClient(
   'https://lgkbrgwgdgqfhidjivcr.supabase.co',
-  'PUBLIC_ANON_KEY'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY'
 )
+
+// 🔐 EMAIL ADMIN
+const ADMIN_EMAIL = 'nourmaand@gmail.com'
 
 const list = document.getElementById('list')
 
-const { data: users } = await supabase
+/* ===== AUTH CHECK ===== */
+const { data:{ session } } = await supabase.auth.getSession()
+
+if(!session){
+  alert('Silakan login admin terlebih dahulu')
+  location.href = '/caption-ai-dhito/'
+}
+
+if(session.user.email !== ADMIN_EMAIL){
+  document.body.innerHTML = `
+    <h2 style="padding:40px">🚫 Access Denied</h2>
+    <p style="padding:0 40px">Akun ini bukan admin</p>
+  `
+  throw new Error('NOT ADMIN')
+}
+
+/* ===== LOAD USERS ===== */
+const { data: users, error } = await supabase
   .from('profiles')
   .select('id, is_premium')
 
-for (const u of users) {
+if(error){
+  list.innerText = 'Gagal memuat data'
+  throw error
+}
+
+list.innerHTML = ''
+
+users.forEach(u=>{
   const div = document.createElement('div')
   div.className = 'card'
   div.innerHTML = `
-    <div><b>${u.id}</b></div>
-    <div>Status: ${u.is_premium ? '⭐ Premium' : 'Free'}</div>
-    <button class="${u.is_premium?'off':'on'}">
-      ${u.is_premium?'Disable':'Enable'} Premium
+    <div class="user">
+      <b>${u.id}</b><br>
+      <span class="badge ${u.is_premium?'premium':'free'}">
+        ${u.is_premium?'⭐ Premium':'Free'}
+      </span>
+    </div>
+    <button class="${u.is_premium?'disable':'enable'}">
+      ${u.is_premium?'Disable':'Enable'}
     </button>
   `
-  div.querySelector('button').onclick = () =>
-    setPremium(u.id, !u.is_premium)
-  list.appendChild(div)
-}
 
-async function setPremium(user_id, premium){
-  await fetch(
-    'https://lgkbrgwgdgqfhidjivcr.supabase.co/functions/v1/set-premium',
-    {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ user_id, premium })
-    }
-  )
-  location.reload()
-}
+  div.querySelector('button').onclick = async ()=>{
+    div.querySelector('button').disabled = true
+
+    await fetch(
+      'https://lgkbrgwgdgqfhidjivcr.supabase.co/functions/v1/set-premium',
+      {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          user_id: u.id,
+          premium: !u.is_premium
+        })
+      }
+    )
+
+    location.reload()
+  }
+
+  list.appendChild(div)
+})
 </script>
 
 </body>

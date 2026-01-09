@@ -6,42 +6,26 @@
 <title>Admin Premium</title>
 
 <style>
-:root{
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --text:#0f172a;
-  --muted:#64748b;
-  --primary:#0ea5e9;
-  --green:#22c55e;
-  --red:#ef4444;
-}
-
-*{box-sizing:border-box}
-
 body{
-  margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
-  background:var(--bg);
-  color:var(--text);
+  background:#f8fafc;
+  margin:0;
+  color:#0f172a;
 }
-
 header{
   padding:16px 20px;
   background:#fff;
-  border-bottom:1px solid var(--border);
+  border-bottom:1px solid #e5e7eb;
   font-weight:700;
 }
-
 main{
   max-width:720px;
   margin:auto;
   padding:20px;
 }
-
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
+  background:#fff;
+  border:1px solid #e5e7eb;
   border-radius:16px;
   padding:16px;
   display:flex;
@@ -49,38 +33,26 @@ main{
   align-items:center;
   margin-bottom:12px;
 }
-
-.user{
-  font-size:13px;
-}
-.user b{
-  font-size:14px;
-}
-
 .badge{
   font-size:12px;
   padding:4px 10px;
   border-radius:999px;
-  margin-top:4px;
-  display:inline-block;
 }
 .premium{background:#ecfeff;color:#0369a1}
 .free{background:#f1f5f9;color:#475569}
-
 button{
   border:none;
   padding:8px 14px;
   border-radius:999px;
-  font-weight:600;
   cursor:pointer;
+  font-weight:600;
 }
-.enable{background:var(--green);color:#fff}
-.disable{background:var(--red);color:#fff}
-
-.loading{
+.enable{background:#22c55e;color:#fff}
+.disable{background:#ef4444;color:#fff}
+.center{
   text-align:center;
-  color:var(--muted);
-  padding:40px 0;
+  padding:60px 20px;
+  color:#64748b;
 }
 </style>
 </head>
@@ -88,10 +60,7 @@ button{
 <body>
 
 <header>👑 Admin Premium Panel</header>
-
-<main>
-  <div id="list" class="loading">Loading users...</div>
-</main>
+<main id="app"></main>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -101,23 +70,30 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxna2JyZ3dnZGdxZmhpZGppdmNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4OTIxMzAsImV4cCI6MjA4MzQ2ODEzMH0.ejJGDTlt_rt69Aa_egmLi8X3mqIMUCaYGzCsXxhgOKY'
 )
 
-// 🔐 EMAIL ADMIN
+// ⚠️ EMAIL ADMIN
 const ADMIN_EMAIL = 'nourmaand@gmail.com'
+const app = document.getElementById('app')
 
-const list = document.getElementById('list')
-
-/* ===== AUTH CHECK ===== */
+/* ===== CHECK LOGIN ===== */
 const { data:{ session } } = await supabase.auth.getSession()
 
 if(!session){
-  alert('Silakan login admin terlebih dahulu')
-  location.href = '/caption-ai-dhito/'
+  app.innerHTML = `
+    <div class="center">
+      🔒 Silakan login Google terlebih dahulu
+    </div>
+  `
+  throw new Error('NOT LOGGED IN')
 }
 
-if(session.user.email !== ADMIN_EMAIL){
-  document.body.innerHTML = `
-    <h2 style="padding:40px">🚫 Access Denied</h2>
-    <p style="padding:0 40px">Akun ini bukan admin</p>
+/* ===== CHECK ADMIN ===== */
+const isAdmin = session.user.email === ADMIN_EMAIL
+
+if(!isAdmin){
+  app.innerHTML = `
+    <div class="center">
+      🚫 Akun ini bukan admin
+    </div>
   `
   throw new Error('NOT ADMIN')
 }
@@ -128,17 +104,16 @@ const { data: users, error } = await supabase
   .select('id, is_premium')
 
 if(error){
-  list.innerText = 'Gagal memuat data'
+  app.innerHTML = `<div class="center">Gagal memuat data</div>`
   throw error
 }
 
-list.innerHTML = ''
-
+/* ===== RENDER ===== */
 users.forEach(u=>{
   const div = document.createElement('div')
   div.className = 'card'
   div.innerHTML = `
-    <div class="user">
+    <div>
       <b>${u.id}</b><br>
       <span class="badge ${u.is_premium?'premium':'free'}">
         ${u.is_premium?'⭐ Premium':'Free'}
@@ -150,8 +125,6 @@ users.forEach(u=>{
   `
 
   div.querySelector('button').onclick = async ()=>{
-    div.querySelector('button').disabled = true
-
     await fetch(
       'https://lgkbrgwgdgqfhidjivcr.supabase.co/functions/v1/set-premium',
       {
@@ -163,11 +136,10 @@ users.forEach(u=>{
         })
       }
     )
-
     location.reload()
   }
 
-  list.appendChild(div)
+  app.appendChild(div)
 })
 </script>
 

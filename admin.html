@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Premium</title>
+
+<style>
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  background:#f8fafc;
+  padding:20px;
+}
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  border:1px solid #e5e7eb;
+}
+button{
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+.on{background:#22c55e;color:#fff}
+.off{background:#ef4444;color:#fff}
+</style>
+</head>
+
+<body>
+
+<h2>👑 Admin Premium Panel</h2>
+<div id="list"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const supabase = createClient(
+  'https://lgkbrgwgdgqfhidjivcr.supabase.co',
+  'PUBLIC_ANON_KEY'
+)
+
+const list = document.getElementById('list')
+
+const { data: users } = await supabase
+  .from('profiles')
+  .select('id, is_premium')
+
+for (const u of users) {
+  const div = document.createElement('div')
+  div.className = 'card'
+  div.innerHTML = `
+    <div><b>${u.id}</b></div>
+    <div>Status: ${u.is_premium ? '⭐ Premium' : 'Free'}</div>
+    <button class="${u.is_premium?'off':'on'}">
+      ${u.is_premium?'Disable':'Enable'} Premium
+    </button>
+  `
+  div.querySelector('button').onclick = () =>
+    setPremium(u.id, !u.is_premium)
+  list.appendChild(div)
+}
+
+async function setPremium(user_id, premium){
+  await fetch(
+    'https://lgkbrgwgdgqfhidjivcr.supabase.co/functions/v1/set-premium',
+    {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ user_id, premium })
+    }
+  )
+  location.reload()
+}
+</script>
+
+</body>
+</html>

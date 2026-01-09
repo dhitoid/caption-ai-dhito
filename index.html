@@ -265,13 +265,10 @@ async function loadPremiumStatus(){
       .maybeSingle()
 
     if(error) throw error
-
     isPremium = data?.is_premium === true
-  }catch(e){
-    // ⚠️ kalau table / row belum ada
+  }catch{
     isPremium = false
   }
-
   updateLimitUI()
 }
 
@@ -302,8 +299,9 @@ function updateLimitUI(){
   if(isPremium){
     limitInfo.innerText = '⭐ Premium Aktif — Unlimited Caption'
   }else{
+    const used = getUsage()
     limitInfo.innerText =
-      `Gratis: ${DAILY_LIMIT - getUsage()} dari ${DAILY_LIMIT} caption tersisa hari ini`
+      `Gratis: ${DAILY_LIMIT-used} dari ${DAILY_LIMIT} caption tersisa hari ini`
   }
 }
 
@@ -318,9 +316,9 @@ generate.onclick = ()=>{
   if(!currentUser) return alert('Silakan login dulu')
 
   if(!isPremium && getUsage() >= DAILY_LIMIT){
-    alert('Limit harian habis 😢')
-    return
-  }
+  alert('Limit harian habis 😢\nUpgrade ke Premium')
+  return
+}
 
   if(!product.value) return alert('Produk wajib diisi')
 
